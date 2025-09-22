@@ -1,0 +1,44 @@
+package com.example.fileprocessor.service;
+
+import com.example.fileprocessor.dto.LoginUserDto;
+import com.example.fileprocessor.dto.RegisterUserDto;
+import com.example.fileprocessor.entity.User;
+import com.example.fileprocessor.repository.UserRepository;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
+
+@Service
+@RequiredArgsConstructor
+public class AuthenticationService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
+    public User register(RegisterUserDto payload) {
+        User user = new User();
+        user.setEmail(payload.getEmail());
+        user.setPassword(passwordEncoder.encode(payload.getPassword()));
+        user.setName(payload.getName());
+
+        if (userRepository.findByEmail(payload.getEmail()).isPresent()) {
+            return null;
+        }
+
+        return userRepository.save(user);
+    }
+
+    public User login(LoginUserDto payload) {
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(payload.getEmail(), payload.getPassword())
+        );
+
+        return userRepository.findByEmail(payload.getEmail()).orElseThrow();
+    }
+}
