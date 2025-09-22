@@ -40,7 +40,7 @@ public class AuthenticationController {
             return new ResponseEntity<>(new ErrorResponse("Registration failed", List.of("Email may already exist")), HttpStatus.BAD_REQUEST);
         }
         LoginResponse loginResponse = LoginAndGetResponse(new LoginUserDto(registeredUser.getEmail(), registerUserDto.getPassword()));
-        return new ResponseEntity<>(loginResponse,  HttpStatus.CREATED);
+        return new ResponseEntity<>(loginResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

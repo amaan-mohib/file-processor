@@ -4,15 +4,11 @@ import com.example.fileprocessor.dto.LoginUserDto;
 import com.example.fileprocessor.dto.RegisterUserDto;
 import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.repository.UserRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +31,7 @@ public class AuthenticationService {
     }
 
     public User login(LoginUserDto payload) {
-        Authentication authenticate = authenticationManager.authenticate(
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(payload.getEmail(), payload.getPassword())
         );
 

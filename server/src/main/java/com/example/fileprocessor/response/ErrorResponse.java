@@ -1,9 +1,7 @@
 package com.example.fileprocessor.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
