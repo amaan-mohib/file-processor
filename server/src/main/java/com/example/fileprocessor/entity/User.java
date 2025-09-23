@@ -38,12 +38,14 @@ public class User implements UserDetails {
 
     @ColumnDefault("now()")
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
     private Instant updatedAt = Instant.now();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FileMetadata> files;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
