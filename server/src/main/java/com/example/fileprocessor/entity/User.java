@@ -48,7 +48,7 @@ public class User implements UserDetails {
     private List<FileMetadata> files;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Jobs> jobs;
+    private List<Job> jobs;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

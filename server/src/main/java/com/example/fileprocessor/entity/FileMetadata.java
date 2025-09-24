@@ -52,7 +52,7 @@ public class FileMetadata {
     private Instant updatedAt = Instant.now();
 
     @OneToMany(mappedBy = "file", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Jobs> jobs;
+    private List<Job> jobs;
 
     public enum FileType {
         CSV,
