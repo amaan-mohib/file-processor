@@ -18,8 +18,6 @@ public class ServerApplication {
 
     @Bean
     CommandLineRunner init(StorageService storageService) {
-        return args -> {
-            storageService.init();
-        };
+        return _ -> storageService.init();
     }
 }

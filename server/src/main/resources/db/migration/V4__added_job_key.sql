@@ -1,0 +1,20 @@
+ALTER TABLE jobs
+    ADD job_key UUID DEFAULT uuid_generate_v4();
+
+ALTER TABLE jobs
+    ADD user_id BIGINT;
+
+ALTER TABLE jobs
+    ALTER COLUMN job_key SET NOT NULL;
+
+ALTER TABLE jobs
+    ALTER COLUMN user_id SET NOT NULL;
+
+ALTER TABLE jobs
+    ADD CONSTRAINT uc_jobs_jobkey UNIQUE (job_key);
+
+ALTER TABLE jobs
+    ADD CONSTRAINT FK_JOBS_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);
+
+ALTER TABLE jobs
+    ALTER COLUMN status SET DEFAULT 'PENDING';

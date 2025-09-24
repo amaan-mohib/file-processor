@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,10 @@ public class FileMetadataService {
 
     public Optional<FileMetadata> findByIdAndUser(Long id, User user) {
         return fileMetadataRepository.findByIdAndUser(id, user);
+    }
+
+    public Optional<FileMetadata> findByKeyAndUser(UUID uuid, User user) {
+        return fileMetadataRepository.findByFileKeyAndUser(uuid, user);
     }
 
     public void deleteFile(Long id) {

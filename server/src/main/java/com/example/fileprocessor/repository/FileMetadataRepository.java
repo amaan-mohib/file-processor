@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface FileMetadataRepository extends JpaRepository<FileMetadata, Long> {
     List<FileMetadata> findByUser(User user);
 
     Optional<FileMetadata> findByIdAndUser(Long id, User user);
+
+    Optional<FileMetadata> findByFileKeyAndUser(UUID fileKey, User user);
 }

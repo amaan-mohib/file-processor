@@ -1,5 +1,6 @@
 package com.example.fileprocessor.storage;
 
+import com.example.fileprocessor.dto.FileSaveDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Service
@@ -38,7 +40,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public String save(MultipartFile file, Long userId) {
+    public FileSaveDto save(MultipartFile file, Long userId) {
         try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file.");
@@ -47,6 +49,8 @@ public class FileSystemStorageService implements StorageService {
             if (fileName == null) {
                 throw new StorageException("Failed to store a file without name.");
             }
+            UUID uuid = UUID.randomUUID();
+            fileName = uuid + "_" + file.getOriginalFilename();
             Path targetParentPath = Paths.get(userId.toString());
             Files.createDirectories(this.rootLocation.resolve(targetParentPath));
             targetParentPath = targetParentPath.resolve(fileName);
@@ -56,7 +60,7 @@ public class FileSystemStorageService implements StorageService {
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
             }
-            return targetParentPath.toString();
+            return new FileSaveDto(targetParentPath.toString(), uuid);
         } catch (IOException e) {
             throw new StorageException("Failed to store file", e);
         }
