@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class Job {
     private User user;
 
     @Column(columnDefinition = "TEXT")
-    private String manipulationQuery;  // "REMOVE key; SET key2=key1+key3;"
+    private String query;  // "REMOVE key; SET key2=key1+key3;"
 
     @ColumnDefault("PENDING")
     @Enumerated(EnumType.STRING)
@@ -57,6 +58,11 @@ public class Job {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
+
+    @UpdateTimestamp
+    private Instant updatedAt = Instant.now();
+
+    private Instant startedAt;
 
     private Instant completedAt;
 

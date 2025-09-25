@@ -8,6 +8,7 @@ import com.example.fileprocessor.service.JobService;
 import com.example.fileprocessor.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/job")
@@ -47,11 +49,18 @@ public class JobController {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<?> handleNoSuchElement(NoSuchElementException exc) {
+        log.error("e: ", exc);
         return new ResponseEntity<>(new GenericResponse<>("Job not found", 404), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<?> handleIO(IOException exc) {
+        log.error("e: ", exc);
         return new ResponseEntity<>(new GenericResponse<>("Failed to perform operation", 400), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<?> handleIllegalStateException(IllegalStateException exc) {
+        return new ResponseEntity<>(new GenericResponse<>(exc.getMessage(), 400), HttpStatus.BAD_REQUEST);
     }
 }

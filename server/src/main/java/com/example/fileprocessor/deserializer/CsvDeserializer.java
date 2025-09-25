@@ -1,4 +1,4 @@
-package com.example.fileprocessor.parser;
+package com.example.fileprocessor.deserializer;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class CsvParser implements FileParser {
+public class CsvDeserializer implements FileDeserializer {
 
     @Override
-    public List<Map<String, Object>> parse(InputStream inputStream) throws IOException {
+    public List<Map<String, Object>> deserialize(InputStream inputStream) throws IOException {
         List<Map<String, Object>> result = new ArrayList<>();
         try (Reader reader = new InputStreamReader(inputStream)) {
             CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).get();

@@ -1,19 +1,17 @@
-package com.example.fileprocessor.parser;
+package com.example.fileprocessor.deserializer;
 
 import com.example.fileprocessor.entity.FileMetadata;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.io.InputStream;
-
 @Component
 @AllArgsConstructor
-public class FileParserFactory {
-    public CsvParser csvParser;
+public class FileDeserializerFactory {
+    public CsvDeserializer csvDeserializer;
 
-    public FileParser getParser(FileMetadata.FileType fileType) {
+    public FileDeserializer getDeserializer(FileMetadata.FileType fileType) {
         return switch (fileType) {
-            case CSV -> csvParser;
+            case CSV -> csvDeserializer;
             // TODO: implement JSON and XML parser
             case JSON, XML -> throw new IllegalArgumentException("Unknown file type: " + fileType);
         };

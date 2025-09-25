@@ -3,6 +3,7 @@ package com.example.fileprocessor.exception;
 import com.example.fileprocessor.response.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.*;
@@ -18,11 +19,17 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @NotNull HttpHeaders headers,
-                                                                  @NotNull HttpStatusCode status, @NotNull WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            @NotNull MethodArgumentNotValidException ex,
+            @NotNull HttpHeaders headers,
+            @NotNull HttpStatusCode status,
+            @NotNull WebRequest request
+    ) {
+        log.error("e: ", ex);
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -39,7 +46,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail errorDetail = null;
 
         // TODO send this stack trace to an observability tool
-        exception.printStackTrace();
+        log.error("e: ", exception);
 
         if (exception instanceof BadCredentialsException) {
             errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(401), exception.getMessage());

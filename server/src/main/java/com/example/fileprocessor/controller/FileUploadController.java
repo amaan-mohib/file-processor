@@ -11,6 +11,7 @@ import com.example.fileprocessor.storage.StorageService;
 import com.example.fileprocessor.util.GenericUtil;
 import com.example.fileprocessor.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,31 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/file")
 public class FileUploadController {
     private final StorageService storageService;
     private final FileMetadataService fileService;
-
-//    @GetMapping("/")
-//    public String listUploadedFiles(Model model) {
-//        // Adds key "files" to Thymeleaf template at "uploadForm.html"
-//        model.addAttribute(
-//                "files",
-//                storageService.loadAll().map(
-//                                path -> MvcUriComponentsBuilder
-//                                        .fromMethodName(
-//                                                FileUploadController.class,
-//                                                "serveFile", path.getFileName().toString()
-//                                        )
-//                                        .build().toUri().toString()
-//                        )
-//                        .collect(Collectors.toList())
-//        );
-//
-//        return "uploadForm";
-//    }
 
     @GetMapping("/{id:.+}")
     @ResponseBody
@@ -103,6 +86,7 @@ public class FileUploadController {
 
     @ExceptionHandler(StorageException.class)
     public ResponseEntity<?> handleStorageException(StorageException exc) {
+        log.error("e: ", exc);
         return new ResponseEntity<>(
                 new GenericResponse<>(
                         "Failed to perform operation, the file may have been moved or does not exist",
