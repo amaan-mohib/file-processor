@@ -79,7 +79,7 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public Path load(String path) {
-        return rootLocation.resolve(path);
+        return rootLocation.resolve(path).normalize();
     }
 
     @Override

@@ -37,9 +37,9 @@ public class FileUploadController {
         FileMetadata fileMetadata = fileService.findByKeyAndUser(id, currentUser).orElseThrow();
         Resource file = storageService.loadAsResource(fileMetadata.getStoragePath());
 
-        if (file == null)
+        if (file == null) {
             return new ResponseEntity<>(new GenericResponse<>("File not found", 404), HttpStatus.NOT_FOUND);
-
+        }
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
@@ -76,11 +76,13 @@ public class FileUploadController {
 
     @ExceptionHandler(StorageFileNotFoundException.class)
     public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+        log.error("e: ", exc);
         return new ResponseEntity<>(new GenericResponse<>("File not found", 404), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<?> handleNoSuchElement(NoSuchElementException exc) {
+        log.error("e: ", exc);
         return new ResponseEntity<>(new GenericResponse<>("File not found", 404), HttpStatus.NOT_FOUND);
     }
 
