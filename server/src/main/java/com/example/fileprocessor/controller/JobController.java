@@ -6,6 +6,7 @@ import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.response.GenericResponse;
 import com.example.fileprocessor.service.JobService;
 import com.example.fileprocessor.storage.FileSystemStorageService;
+import com.example.fileprocessor.util.GenericUtil;
 import com.example.fileprocessor.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +86,13 @@ public class JobController {
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<?> handleIllegalStateException(IllegalStateException exc) {
+        log.error("e: ", exc);
         return new ResponseEntity<>(new GenericResponse<>(exc.getMessage(), 400), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(RuntimeException exc) {
+        log.error("e: ", exc);
+        return new ResponseEntity<>(new GenericResponse<>(GenericUtil.getRootCause(exc).getMessage(), 400), HttpStatus.BAD_REQUEST);
     }
 }

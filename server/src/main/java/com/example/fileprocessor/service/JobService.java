@@ -5,9 +5,10 @@ import com.example.fileprocessor.entity.Job;
 import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.repository.JobRepository;
 import com.example.fileprocessor.storage.FileSystemStorageService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @Service
 public class JobService {
     private final JobRepository jobRepository;
+    private final JobFailureService jobFailureService;
     private final FileMetadataService fileMetadataService;
     private final FileSystemStorageService storageService;
     private final FileProcessingService fileProcessingService;
@@ -65,9 +67,7 @@ public class JobService {
             job.setStatus(Job.JobStatus.COMPLETED);
             job.setCompletedAt(Instant.now());
         } catch (Exception e) {
-            job.setStatus(Job.JobStatus.FAILED);
-            job.setCompletedAt(Instant.now());
-            job.setFailedReason(e.getMessage());
+            jobFailureService.markJobFailed(jobKey, e);
             throw new RuntimeException(e);
         }
 

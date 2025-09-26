@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public interface JobRepository extends JpaRepository<Job, Long> {
     Optional<Job> findByJobKeyAndUser(UUID jobKey, User user);
+    Optional<Job> findByJobKey(UUID jobKey);
     List<Job> findByStatusAndUser(Job.JobStatus status, User user, Pageable pageable);
     List<Job> findByFileAndUser(FileMetadata file, User user, Pageable pageable);
     List<Job> findByUser(User user, Pageable pageable);
