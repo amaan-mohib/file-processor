@@ -3,7 +3,7 @@ package com.example.fileprocessor.controller;
 import com.example.fileprocessor.dto.JobSaveDto;
 import com.example.fileprocessor.entity.Job;
 import com.example.fileprocessor.entity.User;
-import com.example.fileprocessor.response.GenericResponse;
+import com.example.fileprocessor.dto.response.GenericResponse;
 import com.example.fileprocessor.service.JobService;
 import com.example.fileprocessor.storage.FileSystemStorageService;
 import com.example.fileprocessor.util.GenericUtil;

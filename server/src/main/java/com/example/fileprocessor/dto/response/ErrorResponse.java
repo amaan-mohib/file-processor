@@ -1,4 +1,4 @@
-package com.example.fileprocessor.response;
+package com.example.fileprocessor.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;

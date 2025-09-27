@@ -1,6 +1,6 @@
 package com.example.fileprocessor.exception;
 
-import com.example.fileprocessor.response.ErrorResponse;
+import com.example.fileprocessor.dto.response.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
@@ -42,44 +42,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleSecurityException(Exception exception) {
-        ProblemDetail errorDetail = null;
-
+    public ResponseEntity<?> handleSecurityException(Exception exception) {
         // TODO send this stack trace to an observability tool
         log.error("e: ", exception);
 
         if (exception instanceof BadCredentialsException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(401), exception.getMessage());
-            errorDetail.setProperty("description", "The username or password is incorrect");
-
-            return errorDetail;
+            return new ResponseEntity<>(new ErrorResponse("The username or password is incorrect"), HttpStatus.UNAUTHORIZED);
         }
 
         if (exception instanceof AccountStatusException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
-            errorDetail.setProperty("description", "The account is locked");
+            return new ResponseEntity<>(new ErrorResponse("The account is locked"), HttpStatus.FORBIDDEN);
         }
 
         if (exception instanceof AccessDeniedException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
-            errorDetail.setProperty("description", "You are not authorized to access this resource");
+            return new ResponseEntity<>(new ErrorResponse("You are not authorized to access this resource"), HttpStatus.FORBIDDEN);
         }
 
         if (exception instanceof SignatureException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
-            errorDetail.setProperty("description", "The JWT signature is invalid");
+            return new ResponseEntity<>(new ErrorResponse("The JWT signature is invalid"), HttpStatus.FORBIDDEN);
         }
 
         if (exception instanceof ExpiredJwtException) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), exception.getMessage());
-            errorDetail.setProperty("description", "The JWT token has expired");
+            return new ResponseEntity<>(new ErrorResponse("The JWT token has expired"), HttpStatus.FORBIDDEN);
         }
 
-        if (errorDetail == null) {
-            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), exception.getMessage());
-            errorDetail.setProperty("description", "Unknown internal server error.");
-        }
-
-        return errorDetail;
+        return new ResponseEntity<>(new ErrorResponse("Internal Server Error", List.of("An unknown error has occurred")), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

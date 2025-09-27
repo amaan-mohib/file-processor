@@ -1,4 +1,4 @@
-package com.example.fileprocessor.response;
+package com.example.fileprocessor.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

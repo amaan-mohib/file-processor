@@ -44,9 +44,11 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private Instant updatedAt = Instant.now();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FileMetadata> files;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Job> jobs;
 

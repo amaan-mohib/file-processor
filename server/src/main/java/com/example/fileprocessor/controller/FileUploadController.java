@@ -3,7 +3,7 @@ package com.example.fileprocessor.controller;
 import com.example.fileprocessor.dto.FileSaveDto;
 import com.example.fileprocessor.entity.FileMetadata;
 import com.example.fileprocessor.entity.User;
-import com.example.fileprocessor.response.GenericResponse;
+import com.example.fileprocessor.dto.response.GenericResponse;
 import com.example.fileprocessor.service.FileMetadataService;
 import com.example.fileprocessor.storage.StorageException;
 import com.example.fileprocessor.storage.StorageFileNotFoundException;
