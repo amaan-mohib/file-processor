@@ -1,8 +1,7 @@
-import { PUBLIC_API_BASE_URL } from "$env/static/public";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: PUBLIC_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

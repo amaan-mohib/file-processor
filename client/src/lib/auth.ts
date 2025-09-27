@@ -1,16 +1,18 @@
 import api from "./api";
 import type { IUser } from "./types";
 
+const AUTH_TOKEN_KEY = "authToken";
+
 export function authToken() {
   return {
     get token(): string | null {
-      return localStorage.getItem("authToken") || null;
+      return localStorage.getItem(AUTH_TOKEN_KEY) || null;
     },
     set token(value: string) {
-      localStorage.setItem("authToken", value);
+      localStorage.setItem(AUTH_TOKEN_KEY, value);
     },
     clear() {
-      localStorage.removeItem("authToken");
+      localStorage.removeItem(AUTH_TOKEN_KEY);
       window.location.href = "/login";
     },
   };
@@ -19,11 +21,11 @@ export function authToken() {
 export const authService = {
   login: async (email: string, password: string) => {
     const response = await api.post("/auth/login", { email, password });
-    localStorage.setItem("authToken", response.data.token);
+    localStorage.setItem(AUTH_TOKEN_KEY, response.data.token);
     return response.data;
   },
-  logout: () => {
-    localStorage.removeItem("authToken");
+  logout: async () => {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
     window.location.href = "/login";
   },
   register: async (name: string, email: string, password: string) => {
@@ -31,7 +33,9 @@ export const authService = {
     return response.data;
   },
   getProfile: async () => {
-    const response = await api.get<IUser>("/users/me");
-    return response.data;
+    const {
+      data: { data: user },
+    } = await api.get<{ data: IUser }>("/users/me");
+    return user;
   },
 };
