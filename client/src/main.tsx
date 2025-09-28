@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 
@@ -32,7 +32,13 @@ declare module "@tanstack/react-router" {
 
 function App() {
   const auth = useAuth();
-  if (auth.isLoading) {
+  const { isLoading, init } = auth;
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  if (isLoading) {
     return (
       <div className="h-dvh flex items-center justify-center">
         <Spinner variant="circle" size={40} />

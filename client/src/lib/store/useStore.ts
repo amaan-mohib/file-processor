@@ -10,6 +10,11 @@ interface IAuth {
 }
 interface IStore {
   auth: IAuth;
+  upload: {
+    files: Record<string, File[]>;
+    setFiles: (arg: Record<string, File[]>) => void;
+  };
+  breadcrumbs: { name: string; link: string }[];
 }
 
 const useStore = create<IStore>((set, get) => ({
@@ -36,6 +41,25 @@ const useStore = create<IStore>((set, get) => ({
       });
     },
   },
+  upload: {
+    files: {
+      CSV: [],
+      JSON: [],
+      XML: [],
+    },
+    setFiles(arg) {
+      set({
+        upload: {
+          ...get().upload,
+          files: {
+            ...get().upload.files,
+            ...arg,
+          },
+        },
+      });
+    },
+  },
+  breadcrumbs: [{ name: "Home", link: "/dashboard" }],
 }));
 
 export default useStore;

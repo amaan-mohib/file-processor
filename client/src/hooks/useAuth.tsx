@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { authService, authToken } from "../lib/auth";
 import useStore from "../lib/store/useStore";
 
@@ -19,15 +18,15 @@ export const useAuth = () => {
     }
   };
 
-  useEffect(() => {
+  const init = async () => {
     if (user) return;
     const { token } = authToken();
     if (token) {
-      getUser();
+      await getUser();
     } else {
       resetAuth();
     }
-  }, []);
+  };
 
   const login = async (email: string, password: string) => {
     await authService.login(email, password).catch(console.error);
@@ -39,5 +38,5 @@ export const useAuth = () => {
     resetAuth();
   };
 
-  return { user, isAuthenticated, isLoading, login, logout };
+  return { user, isAuthenticated, isLoading, login, logout, init };
 };

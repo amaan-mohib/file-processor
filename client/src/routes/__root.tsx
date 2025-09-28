@@ -8,6 +8,7 @@ interface AuthState {
   user: IUser | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+  init: () => Promise<void>;
 }
 
 interface IRouterContext {
