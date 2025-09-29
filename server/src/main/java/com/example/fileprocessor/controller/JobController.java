@@ -1,9 +1,11 @@
 package com.example.fileprocessor.controller;
 
-import com.example.fileprocessor.dto.JobSaveDto;
 import com.example.fileprocessor.entity.Job;
 import com.example.fileprocessor.entity.User;
-import com.example.fileprocessor.dto.response.GenericResponse;
+import com.example.fileprocessor.payload.request.JobCreateDto;
+import com.example.fileprocessor.payload.request.JobSaveDto;
+import com.example.fileprocessor.payload.response.GenericResponse;
+import com.example.fileprocessor.service.FileJobService;
 import com.example.fileprocessor.service.JobService;
 import com.example.fileprocessor.storage.FileSystemStorageService;
 import com.example.fileprocessor.util.GenericUtil;
@@ -11,15 +13,20 @@ import com.example.fileprocessor.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,6 +34,7 @@ import java.util.UUID;
 @RequestMapping("/job")
 public class JobController {
     private final JobService jobService;
+    private final FileJobService fileJobService;
     private final FileSystemStorageService storageService;
 
     @GetMapping("/{id:.+}")
@@ -61,7 +69,7 @@ public class JobController {
         User currentUser = SecurityUtil.getCurrentUser();
         Job job = jobService.create(payload.fileKey(), currentUser, payload.query());
 
-        return new ResponseEntity<>(new GenericResponse<>("Job created", 201, job),  HttpStatus.CREATED);
+        return new ResponseEntity<>(new GenericResponse<>("Job created", 201, job), HttpStatus.CREATED);
     }
 
     @PostMapping("/run/{id:.+}")
@@ -70,6 +78,27 @@ public class JobController {
         Job result = jobService.runJob(id, currentUser);
 
         return new ResponseEntity<>(new GenericResponse<>("Job run", 200, result), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/create-run", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createAndRun(@RequestParam("files") MultipartFile[] files, @RequestParam("fileTypes") String[] fileTypes, @RequestParam("query") String query) {
+        User currentUser = SecurityUtil.getCurrentUser();
+        List<JobCreateDto> dto =
+                IntStream.range(0, files.length)
+                        .mapToObj(i ->
+                                new JobCreateDto(files[i], GenericUtil.getFileType(fileTypes[i]))
+                        )
+                        .toList();
+        List<Job> result = fileJobService.uploadAndRunJobs(dto, query, currentUser);
+
+        return new ResponseEntity<>(new GenericResponse<>("Job run", 200, result), HttpStatus.OK);
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<?> getRecentJobs(@RequestParam(value = "limit", defaultValue = "25") Integer limit) {
+        User currentUser = SecurityUtil.getCurrentUser();
+        List<Job> jobs = jobService.getRecentJobs(currentUser, limit);
+        return new ResponseEntity<>(new GenericResponse<>("Recent jobs", 200, jobs), HttpStatus.OK);
     }
 
     @ExceptionHandler(NoSuchElementException.class)

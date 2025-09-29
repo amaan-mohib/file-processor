@@ -2,6 +2,7 @@ import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 import type { IUser } from "@/lib/types";
+import { Toaster } from "@/components/ui/sonner";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -19,6 +20,7 @@ export const Route = createRootRouteWithContext<IRouterContext>()({
   component: () => (
     <>
       <Outlet />
+      <Toaster />
       <TanstackDevtools
         config={{
           position: "bottom-left",

@@ -1,9 +1,9 @@
 package com.example.fileprocessor.controller;
 
-import com.example.fileprocessor.dto.response.UserResponse;
+import com.example.fileprocessor.payload.response.UserResponse;
 import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.repository.UserRepository;
-import com.example.fileprocessor.dto.response.GenericResponse;
+import com.example.fileprocessor.payload.response.GenericResponse;
 import com.example.fileprocessor.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

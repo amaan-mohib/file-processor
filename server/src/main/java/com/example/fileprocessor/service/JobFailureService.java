@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -17,10 +18,12 @@ public class JobFailureService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markJobFailed(UUID jobKey, Exception e) {
-        Job job = jobRepository.findByJobKey(jobKey).orElseThrow();
-        job.setStatus(Job.JobStatus.FAILED);
-        job.setCompletedAt(Instant.now());
-        job.setFailedReason(e.getMessage());
-        jobRepository.save(job);
+        Optional<Job> job = jobRepository.findByJobKey(jobKey);
+        job.ifPresent(j -> {
+            j.setStatus(Job.JobStatus.FAILED);
+            j.setCompletedAt(Instant.now());
+            j.setFailedReason(e.getMessage());
+            jobRepository.save(j);
+        });
     }
 }

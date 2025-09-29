@@ -1,6 +1,6 @@
 package com.example.fileprocessor.storage;
 
-import com.example.fileprocessor.dto.FileSaveDto;
+import com.example.fileprocessor.payload.request.FileSaveDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

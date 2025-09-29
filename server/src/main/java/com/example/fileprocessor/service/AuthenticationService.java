@@ -1,7 +1,7 @@
 package com.example.fileprocessor.service;
 
-import com.example.fileprocessor.dto.LoginUserDto;
-import com.example.fileprocessor.dto.RegisterUserDto;
+import com.example.fileprocessor.payload.request.LoginUserDto;
+import com.example.fileprocessor.payload.request.RegisterUserDto;
 import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

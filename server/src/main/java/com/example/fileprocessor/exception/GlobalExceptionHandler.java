@@ -1,6 +1,6 @@
 package com.example.fileprocessor.exception;
 
-import com.example.fileprocessor.dto.response.ErrorResponse;
+import com.example.fileprocessor.payload.response.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;

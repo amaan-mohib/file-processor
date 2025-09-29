@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/theme-toggle";
 import useStore from "@/lib/store/useStore";
+import { Fragment } from "react/jsx-runtime";
 
 export default function Layout() {
   const breadcrumbs = useStore((state) => state.breadcrumbs);
@@ -39,15 +40,16 @@ export default function Layout() {
             <Breadcrumb>
               <BreadcrumbList>
                 {breadcrumbs.map((item, index) => (
-                  <>
+                  <Fragment key={item.name}>
                     {index !== 0 && (
-                      <BreadcrumbSeparator className="hidden md:block" />
+                      <BreadcrumbSeparator
+                        key={index}
+                        className="hidden md:block"
+                      />
                     )}
-                    <BreadcrumbItem key={item.name} className="hidden md:block">
+                    <BreadcrumbItem className="hidden md:block">
                       {index === breadcrumbs.length - 1 ? (
-                        <BreadcrumbItem>
-                          <BreadcrumbPage>{item.name}</BreadcrumbPage>
-                        </BreadcrumbItem>
+                        <BreadcrumbPage>{item.name}</BreadcrumbPage>
                       ) : (
                         <Link
                           className="hover:text-foreground transition-colors"
@@ -56,7 +58,7 @@ export default function Layout() {
                         </Link>
                       )}
                     </BreadcrumbItem>
-                  </>
+                  </Fragment>
                 ))}
               </BreadcrumbList>
             </Breadcrumb>

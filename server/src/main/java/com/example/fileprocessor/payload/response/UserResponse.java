@@ -1,4 +1,4 @@
-package com.example.fileprocessor.dto.response;
+package com.example.fileprocessor.payload.response;
 
 import com.example.fileprocessor.entity.User;
 import lombok.Getter;

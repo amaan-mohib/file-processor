@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
   Dropzone,
   DropzoneContent,
   DropzoneEmptyState,
-} from "./ui/shadcn-io/dropzone";
+} from "../ui/shadcn-io/dropzone";
 import useStore from "@/lib/store/useStore";
 
 interface IUploaderProps {
@@ -50,7 +50,8 @@ const tabs = ["CSV", "JSON", "XML"];
 interface FileUploadProps {}
 
 const FileUpload: React.FC<FileUploadProps> = () => {
-  const { files, setFiles } = useStore((state) => state.upload);
+  const { files, setFiles } = useStore((state) => state.dashboard.upload);
+  const isLoading = useStore((state) => state.dashboard.isLoading);
 
   return (
     <div className="flex flex-col gap-4">
@@ -65,6 +66,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
         {tabs.map((tab) => (
           <TabsContent key={tab} value={tab}>
             <Uploader
+              key={`${isLoading}`}
               defaultFiles={files[tab]}
               type={tab}
               setAllFiles={setFiles}

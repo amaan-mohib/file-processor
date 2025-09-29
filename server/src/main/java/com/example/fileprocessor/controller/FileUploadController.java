@@ -1,9 +1,10 @@
 package com.example.fileprocessor.controller;
 
-import com.example.fileprocessor.dto.FileSaveDto;
+import com.example.fileprocessor.payload.request.FileSaveDto;
 import com.example.fileprocessor.entity.FileMetadata;
 import com.example.fileprocessor.entity.User;
-import com.example.fileprocessor.dto.response.GenericResponse;
+import com.example.fileprocessor.payload.request.JobCreateDto;
+import com.example.fileprocessor.payload.response.GenericResponse;
 import com.example.fileprocessor.service.FileMetadataService;
 import com.example.fileprocessor.storage.StorageException;
 import com.example.fileprocessor.storage.StorageFileNotFoundException;
@@ -19,8 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,18 +50,18 @@ public class FileUploadController {
             @RequestParam(name = "type", defaultValue = "CSV") String type
     ) {
         User currentUser = SecurityUtil.getCurrentUser();
-        FileSaveDto saveResponse = storageService.save(file, currentUser.getId());
+        JobCreateDto fileObj = new JobCreateDto();
+        fileObj.setFile(file);
+        fileObj.setFileType(GenericUtil.getFileType(type));
+        FileMetadata createdFile = fileService.uploadFiles(currentUser, List.of(fileObj)).getFirst();
+        Map<String, Object> result = new HashMap<>();
+        result.put("key", createdFile.getFileKey());
+        result.put("type", createdFile.getFileType().toString());
+        result.put("name", createdFile.getFileName());
+        result.put("size", createdFile.getOriginalSize());
+        result.put("createdAt", createdFile.getCreatedAt());
 
-        FileMetadata fileMetadata = new FileMetadata();
-        fileMetadata.setFileKey(saveResponse.getFileKey());
-        fileMetadata.setFileType(GenericUtil.getFileType(type));
-        fileMetadata.setFileName(file.getOriginalFilename());
-        fileMetadata.setStoragePath(saveResponse.getFilePath());
-        fileMetadata.setOriginalSize(file.getSize());
-        fileMetadata.setUser(currentUser);
-
-        fileService.save(fileMetadata);
-        return ResponseEntity.ok(new GenericResponse<>("File successfully uploaded!"));
+        return ResponseEntity.ok(new GenericResponse<>("File successfully uploaded!", 200, result));
     }
 
     @DeleteMapping("/{id:.+}")

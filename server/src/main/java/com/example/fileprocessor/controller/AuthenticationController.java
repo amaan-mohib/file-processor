@@ -1,10 +1,10 @@
 package com.example.fileprocessor.controller;
 
-import com.example.fileprocessor.dto.LoginUserDto;
-import com.example.fileprocessor.dto.RegisterUserDto;
+import com.example.fileprocessor.payload.request.LoginUserDto;
+import com.example.fileprocessor.payload.request.RegisterUserDto;
 import com.example.fileprocessor.entity.User;
-import com.example.fileprocessor.dto.response.ErrorResponse;
-import com.example.fileprocessor.dto.response.LoginResponse;
+import com.example.fileprocessor.payload.response.ErrorResponse;
+import com.example.fileprocessor.payload.response.LoginResponse;
 import com.example.fileprocessor.service.AuthenticationService;
 import com.example.fileprocessor.service.JwtService;
 import jakarta.validation.Valid;

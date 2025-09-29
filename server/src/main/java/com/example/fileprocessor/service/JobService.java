@@ -6,20 +6,17 @@ import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.repository.JobRepository;
 import com.example.fileprocessor.storage.FileSystemStorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class JobService {
     private final JobRepository jobRepository;
     private final JobFailureService jobFailureService;
@@ -35,6 +32,10 @@ public class JobService {
         return jobRepository.findByJobKeyAndUser(uuid, user);
     }
 
+    public List<Job> getRecentJobs(User user, Integer limit) {
+        return jobRepository.findByUserOrderByCreatedAtDesc(user, Limit.of(limit));
+    }
+
     public void delete(Long id) {
         jobRepository.deleteById(id);
     }
@@ -46,6 +47,18 @@ public class JobService {
         job.setUser(user);
         job.setQuery(query);
         return save(job);
+    }
+
+    @Transactional
+    public List<Job> createAndRunJobs(List<FileMetadata> files, String query, User user) {
+        List<Job> jobs = new ArrayList<>();
+        for (FileMetadata file : files) {
+            Job newJob = create(file.getFileKey(), user, query);
+            // TODO: move to queue and return newJob directly
+            Job runningJob = runJob(newJob.getJobKey(), user);
+            jobs.add(runningJob);
+        }
+        return jobs;
     }
 
     @Transactional

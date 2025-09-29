@@ -23,7 +23,7 @@ public class FileProcessingService {
     private final FileSerializerFactory fileSerializerFactory;
     private final QueryEngine queryEngine;
 
-    public List<Map<String, Object>> processFile(FileMetadata file, InputStream inputStream, String query) throws IOException {
+    public List<Map<String, Object>> processFile(FileMetadata file, InputStream inputStream, String query) throws Exception {
         FileDeserializer fileDeserializer = fileDeserializerFactory.getDeserializer(file.getFileType());
         var deserialized = fileDeserializer.deserialize(inputStream);
         return queryEngine.execute(deserialized, query);

@@ -1,4 +1,4 @@
-package com.example.fileprocessor.dto;
+package com.example.fileprocessor.payload.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

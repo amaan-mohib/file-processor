@@ -1,16 +1,12 @@
-package com.example.fileprocessor.dto;
+package com.example.fileprocessor.payload.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class RegisterUserDto {
-    @NotEmpty(message = "The name is required.")
-    private String name;
-
+public class LoginUserDto {
     @NotEmpty(message = "The email address is required.")
     private String email;
 
