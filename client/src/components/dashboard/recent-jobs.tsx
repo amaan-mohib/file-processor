@@ -11,6 +11,8 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "../ui/button";
 import { ArrowRight, RefreshCcw } from "lucide-react";
 import useStore from "@/lib/store/useStore";
+import JobCard from "./job-card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface RecentJobsProps {}
 
@@ -39,24 +41,29 @@ const RecentJobs: React.FC<RecentJobsProps> = () => {
           </Link>
         </CardDescription>
         <CardAction>
-          <Button
-            variant={"secondary"}
-            size={"icon"}
-            disabled={isLoading}
-            onClick={() => {
-              getRecentJobs();
-            }}>
-            <RefreshCcw />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button
+                variant={"secondary"}
+                size={"icon"}
+                disabled={isLoading}
+                onClick={() => {
+                  getRecentJobs();
+                }}>
+                <RefreshCcw />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">Refresh</TooltipContent>
+          </Tooltip>
         </CardAction>
       </CardHeader>
       <CardContent className="flex-1 max-h-[calc(100vh-13rem)] overflow-auto">
         {data.length === 0 ? (
           <p className="text-muted-foreground text-sm">No jobs ran</p>
         ) : (
-          <div>
+          <div className="flex flex-col gap-4">
             {data.map((item) => (
-              <div key={item.jobKey}>{item.jobKey}</div>
+              <JobCard key={item.jobKey} job={item} />
             ))}
           </div>
         )}

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Files, GalleryVerticalEnd, Home, Logs } from "lucide-react";
+import { Files, Home, Logs } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -43,8 +43,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link to="/">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <GalleryVerticalEnd className="size-4" />
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 text-lg items-center justify-center rounded-lg">
+                  δ
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-medium">Delta Processor</span>

@@ -1,10 +1,9 @@
 import { create } from "zustand";
-import type { IAuth, IJob } from "../types";
-import cloneDeep from "lodash.clonedeep";
+import type { IJob } from "../types";
 import { recentJobs } from "../api/dashboard";
+import { immer } from "zustand/middleware/immer";
 
 interface IStore {
-  auth: IAuth;
   dashboard: {
     upload: {
       files: Record<string, File[]>;
@@ -24,97 +23,71 @@ interface IStore {
   };
 }
 
-const useStore = create<IStore>((set, get) => ({
-  auth: {
-    user: null,
-    isAuthenticated: false,
-    isLoading: false,
-    setAuth(args) {
-      set({
-        auth: {
-          ...get().auth,
-          ...args,
+const useStore = create<IStore>()(
+  immer((set) => ({
+    dashboard: {
+      upload: {
+        files: {
+          CSV: [],
+          JSON: [],
+          XML: [],
         },
-      });
-    },
-    resetAuth() {
-      set({
-        auth: {
-          ...get().auth,
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
+        setFiles(arg) {
+          set((s) => {
+            s.dashboard.upload.files = {
+              ...s.dashboard.upload.files,
+              ...arg,
+            };
+          });
         },
-      });
-    },
-  },
-  dashboard: {
-    upload: {
-      files: {
-        CSV: [],
-        JSON: [],
-        XML: [],
       },
-      setFiles(arg) {
-        const dashboard = get().dashboard;
-        dashboard.upload.files = {
-          ...dashboard.upload.files,
-          ...arg,
-        };
-        set({
-          dashboard: cloneDeep(dashboard),
+      resetDashboard: () => {
+        set((s) => {
+          s.dashboard.upload.files = {
+            CSV: [],
+            JSON: [],
+            XML: [],
+          };
+          s.dashboard.query = "";
         });
       },
-    },
-    resetDashboard: () => {
-      const dashboard = get().dashboard;
-      dashboard.upload.files = {
-        CSV: [],
-        JSON: [],
-        XML: [],
-      };
-      dashboard.query = "";
-      set({
-        dashboard: cloneDeep(dashboard),
-      });
-    },
-    query: "",
-    setQuery(value) {
-      const dashboard = get().dashboard;
-      dashboard.query = value;
-      set({ dashboard: cloneDeep(dashboard) });
-    },
-    isLoading: false,
-    setIsLoading(value) {
-      const dashboard = get().dashboard;
-      dashboard.isLoading = value;
-      set({ dashboard: cloneDeep(dashboard) });
-    },
-  },
-  breadcrumbs: [{ name: "Home", link: "/dashboard" }],
-  recentJobs: {
-    data: [],
-    isLoading: true,
-    async getRecentJobs() {
-      try {
-        const res = get().recentJobs;
-        res.isLoading = true;
-        set({
-          recentJobs: cloneDeep(res),
+      query: "",
+      setQuery(value) {
+        set((s) => {
+          s.dashboard.query = value;
         });
-
-        const data = await recentJobs();
-        res.isLoading = false;
-        res.data = data;
-
-        set({
-          recentJobs: cloneDeep(res),
+      },
+      isLoading: false,
+      setIsLoading(value) {
+        set((s) => {
+          s.dashboard.isLoading = value;
         });
-      } catch (error) {
-        console.error(error);
-      }
+      },
     },
-  },
-}));
+    breadcrumbs: [{ name: "Home", link: "/dashboard" }],
+    recentJobs: {
+      data: [],
+      isLoading: true,
+      async getRecentJobs() {
+        try {
+          set((s) => {
+            s.recentJobs.isLoading = true;
+          });
+          const data = await recentJobs();
+          set((s) => {
+            s.recentJobs.data = data;
+            s.recentJobs.isLoading = false;
+          });
+        } catch (error) {
+          console.error(error);
+        } finally {
+          set((s) => {
+            s.recentJobs.isLoading = false;
+          });
+        }
+      },
+    },
+  }))
+);
 
 export default useStore;

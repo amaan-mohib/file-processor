@@ -1,10 +1,9 @@
+import useAuthStore from "@/lib/store/useAuthStore";
 import { authService, authToken } from "../lib/auth";
-import useStore from "../lib/store/useStore";
 
 export const useAuth = () => {
-  const { user, isAuthenticated, isLoading, setAuth, resetAuth } = useStore(
-    (state) => state.auth
-  );
+  const { user, isAuthenticated, isLoading, setAuth, resetAuth } =
+    useAuthStore();
 
   const getUser = async () => {
     try {
