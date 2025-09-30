@@ -10,8 +10,8 @@ import {
 import type { IJob } from "@/lib/types";
 import { Badge, badgeVariants } from "../ui/badge";
 import { Button } from "../ui/button";
-import { format } from "date-fns";
 import type { VariantProps } from "class-variance-authority";
+import { formatFullDate } from "@/lib/utils";
 
 interface JobCardProps {
   job: IJob;
@@ -71,7 +71,15 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground text-sm">
-          Started at: {format(job.startedAt, "LLL dd, yyyy 'at' h:mm a")}
+          {job.status === "COMPLETED" && (
+            <>Completed at: {formatFullDate(job.completedAt)}</>
+          )}
+          {job.status === "IN_PROGRESS" && (
+            <>Started at: {formatFullDate(job.startedAt)}</>
+          )}
+          {(job.status === "PENDING" || job.status === "FAILED") && (
+            <>Created at: {formatFullDate(job.createdAt)}</>
+          )}
         </p>
       </CardContent>
     </Card>
