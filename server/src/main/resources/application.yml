@@ -13,6 +13,11 @@ spring:
   jpa:
     open-in-view: false
     show-sql: ${SHOW_SQL:true}
+  rabbitmq:
+    host: ${RMQ_HOST:localhost}
+    port: ${RMQ_PORT:5672}
+    username: ${RMQ_USER:guest}
+    password: ${RMQ_PASSWORD:guest}
 security:
   jwt:
     secret: ${JWT_SECRET:2100628d5a6c27d0cf342603f51d19dd404278267fce707dc2b55d2406642b0a}

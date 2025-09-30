@@ -3,6 +3,7 @@ package com.example.fileprocessor.service;
 import com.example.fileprocessor.entity.FileMetadata;
 import com.example.fileprocessor.entity.Job;
 import com.example.fileprocessor.entity.User;
+import com.example.fileprocessor.queue.MessageProducer;
 import com.example.fileprocessor.repository.JobRepository;
 import com.example.fileprocessor.storage.FileSystemStorageService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class JobService {
     private final FileMetadataService fileMetadataService;
     private final FileSystemStorageService storageService;
     private final FileProcessingService fileProcessingService;
+    private final MessageProducer messageProducer;
 
     public Job save(Job job) {
         return jobRepository.save(job);
@@ -54,18 +56,22 @@ public class JobService {
         List<Job> jobs = new ArrayList<>();
         for (FileMetadata file : files) {
             Job newJob = create(file.getFileKey(), user, query);
-            // TODO: move to queue and return newJob directly
-            Job runningJob = runJob(newJob.getJobKey(), user);
-            jobs.add(runningJob);
+            messageProducer.sendMessage("job:" + newJob.getJobKey());
+            jobs.add(newJob);
         }
         return jobs;
     }
 
     @Transactional
     public Job runJob(UUID jobKey, User user) {
-        Job job = jobRepository.findByJobKeyAndUser(jobKey, user).orElseThrow();
+        Job job = user == null ?
+                jobRepository.findByJobKey(jobKey).orElseThrow() :
+                jobRepository.findByJobKeyAndUser(jobKey, user).orElseThrow();
         if (job.getStatus() != Job.JobStatus.PENDING) {
             throw new IllegalStateException("Job is not in PENDING status");
+        }
+        if (user == null) {
+            user = job.getUser();
         }
         FileMetadata file = job.getFile();
         job.setStatus(Job.JobStatus.IN_PROGRESS);
