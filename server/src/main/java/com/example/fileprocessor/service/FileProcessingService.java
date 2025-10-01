@@ -7,6 +7,8 @@ import com.example.fileprocessor.deserializer.FileDeserializerFactory;
 import com.example.fileprocessor.serializer.FileSerializer;
 import com.example.fileprocessor.serializer.FileSerializerFactory;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,11 +24,15 @@ public class FileProcessingService {
     private final FileDeserializerFactory fileDeserializerFactory;
     private final FileSerializerFactory fileSerializerFactory;
     private final QueryEngine queryEngine;
+    @Getter
+    @Setter
+    private List<String> headers;
 
     public List<Map<String, Object>> processFile(FileMetadata file, InputStream inputStream, String query) throws Exception {
         FileDeserializer fileDeserializer = fileDeserializerFactory.getDeserializer(file.getFileType());
         var deserialized = fileDeserializer.deserialize(inputStream);
-        return queryEngine.execute(deserialized, query);
+        this.setHeaders(deserialized.getHeaders());
+        return queryEngine.execute(deserialized.getData(), deserialized.getHeaders(), query);
     }
 
     public String dumpOutput(List<Map<String, Object>> result, FileMetadata file, Long userId) throws IOException {
@@ -35,7 +41,7 @@ public class FileProcessingService {
         Files.createDirectories(outputPath);
         outputPath = outputPath.resolve(file.getFileKey() + "_" + file.getFileName());
 
-        fileSerializer.serialize(result, outputPath);
+        fileSerializer.serialize(result, this.getHeaders(), outputPath);
         return outputPath.toString();
     }
 }

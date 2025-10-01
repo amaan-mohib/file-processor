@@ -28,6 +28,18 @@ public class QueryParser {
         if (ctx.removeStatement() != null) {
             return commandRegistry.getCommand(ctx.removeStatement());
         }
+        if (ctx.insertStatement() != null) {
+            return commandRegistry.getCommand(ctx.insertStatement());
+        }
+        if (ctx.deleteStatement() != null) {
+            return commandRegistry.getCommand(ctx.deleteStatement());
+        }
+        if (ctx.filterStatement() != null) {
+            return commandRegistry.getCommand(ctx.filterStatement());
+        }
+        if (ctx.selectStatement() != null) {
+            return commandRegistry.getCommand(ctx.selectStatement());
+        }
         return null;
     }
 

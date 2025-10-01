@@ -25,4 +25,24 @@ public class GenericUtil {
         }
         return throwable;
     }
+
+    public static Object inferType(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        try {
+            return Integer.valueOf(value);
+        } catch (NumberFormatException ignored) {}
+
+        try {
+            return Double.valueOf(value);
+        } catch (NumberFormatException ignored) {}
+
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+            return Boolean.valueOf(value);
+        }
+
+        return value;
+    }
 }

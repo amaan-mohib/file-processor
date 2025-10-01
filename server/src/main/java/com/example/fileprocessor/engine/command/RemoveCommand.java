@@ -12,7 +12,7 @@ public class RemoveCommand implements QueryCommand {
     private final FileQueryParser.RemoveStatementContext ctx;
 
     @Override
-    public List<Map<String, Object>> execute(List<Map<String, Object>> data) {
+    public List<Map<String, Object>> execute(List<Map<String, Object>> data, List<String> headers) {
         new RemoveVisitor(data).visitRemoveStatement(ctx);
         return data;
     }

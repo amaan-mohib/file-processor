@@ -14,10 +14,10 @@ import java.util.Map;
 public class QueryEngine {
     private final QueryParser queryParser;
 
-    public List<Map<String, Object>> execute(List<Map<String, Object>> data, String query) throws SyntaxException {
+    public List<Map<String, Object>> execute(List<Map<String, Object>> data, List<String> headers, String query) throws SyntaxException {
         List<QueryCommand> commands = queryParser.parse(query);
         for (QueryCommand command : commands) {
-            data = command.execute(data);
+            data = command.execute(data, headers);
         }
         return data;
     }

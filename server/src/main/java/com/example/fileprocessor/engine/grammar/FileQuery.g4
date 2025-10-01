@@ -26,7 +26,7 @@ pathExpression
 
 // Statements
 selectStatement
-    : SELECT columnList (WHERE expression)? ';'?
+    : SELECT columnList (WHERE comparison)? ';'?
     ;
 
 setStatement

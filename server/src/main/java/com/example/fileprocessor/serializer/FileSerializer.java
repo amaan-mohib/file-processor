@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface FileSerializer {
-    void serialize(List<Map<String, Object>> result, Path path) throws IOException;
+    void serialize(List<Map<String, Object>> result, List<String> headers, Path path) throws IOException;
 }

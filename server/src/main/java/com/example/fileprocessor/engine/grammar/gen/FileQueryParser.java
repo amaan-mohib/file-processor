@@ -468,8 +468,8 @@ public class FileQueryParser extends Parser {
 			return getRuleContext(ColumnListContext.class,0);
 		}
 		public TerminalNode WHERE() { return getToken(FileQueryParser.WHERE, 0); }
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
+		public ComparisonContext comparison() {
+			return getRuleContext(ComparisonContext.class,0);
 		}
 		public SelectStatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -509,7 +509,7 @@ public class FileQueryParser extends Parser {
 				setState(96);
 				match(WHERE);
 				setState(97);
-				expression(0);
+				comparison();
 				}
 			}
 
@@ -2545,7 +2545,7 @@ public class FileQueryParser extends Parser {
 		"YT\u0001\u0000\u0000\u0000YV\u0001\u0000\u0000\u0000Z]\u0001\u0000\u0000"+
 		"\u0000[Y\u0001\u0000\u0000\u0000[\\\u0001\u0000\u0000\u0000\\\u0007\u0001"+
 		"\u0000\u0000\u0000][\u0001\u0000\u0000\u0000^_\u0005\u0019\u0000\u0000"+
-		"_b\u0003\u001e\u000f\u0000`a\u0005\"\u0000\u0000ac\u0003*\u0015\u0000"+
+		"_b\u0003\u001e\u000f\u0000`a\u0005\"\u0000\u0000ac\u0003$\u0012\u0000"+
 		"b`\u0001\u0000\u0000\u0000bc\u0001\u0000\u0000\u0000ce\u0001\u0000\u0000"+
 		"\u0000df\u0005\u0006\u0000\u0000ed\u0001\u0000\u0000\u0000ef\u0001\u0000"+
 		"\u0000\u0000f\t\u0001\u0000\u0000\u0000gh\u0005\u001a\u0000\u0000hm\u0003"+

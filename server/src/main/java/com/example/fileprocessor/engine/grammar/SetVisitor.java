@@ -2,7 +2,6 @@ package com.example.fileprocessor.engine.grammar;
 
 import com.example.fileprocessor.engine.grammar.gen.FileQueryBaseVisitor;
 import com.example.fileprocessor.engine.grammar.gen.FileQueryParser;
-import com.example.fileprocessor.exception.SyntaxException;
 import lombok.AllArgsConstructor;
 
 import java.util.List;

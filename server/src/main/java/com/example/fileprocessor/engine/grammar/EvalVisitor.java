@@ -4,11 +4,22 @@ import com.example.fileprocessor.engine.grammar.gen.FileQueryBaseVisitor;
 import com.example.fileprocessor.engine.grammar.gen.FileQueryParser;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class EvalVisitor extends FileQueryBaseVisitor<Object> {
     private final Map<String, Object> row;
+    private final List<String> headers;
+
+    public EvalVisitor(Map<String, Object> row) {
+        this.row = row;
+        this.headers = new ArrayList<>();
+    }
+
+    public EvalVisitor(List<String> headers) {
+        this.headers = headers;
+        this.row = new HashMap<>();
+    }
 
     private Object getIdentifier(FileQueryParser.IdentifierContext ctx) {
         return row.get(ctx.ID().getText());
@@ -25,8 +36,20 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitValueExpr(FileQueryParser.ValueExprContext ctx) {
-        var literal = ctx.value();
+    public List<String> visitColumnList(FileQueryParser.ColumnListContext ctx) {
+        boolean isAll = Objects.equals(ctx.getText(), "*");
+        List<String> columns = new ArrayList<>();
+        if (isAll) {
+            return headers;
+        } else {
+            ctx.identifier().forEach(identifierContext -> {
+                columns.add(identifierContext.getText());
+            });
+        }
+        return columns;
+    }
+
+    private Object getValue(FileQueryParser.ValueContext literal) {
         if (literal.STRING() != null) {
             String text = literal.STRING().getText();
             return text.replace("\"", "");
@@ -38,9 +61,20 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
                 return Integer.parseInt(numStr);
             }
         } else if (literal.getText().equals("true") || literal.getText().equals("false")) {
-            return Boolean.parseBoolean(ctx.getText());
+            return Boolean.parseBoolean(literal.getText());
         }
         return null;
+    }
+
+    @Override
+    public Object visitValue(FileQueryParser.ValueContext ctx) {
+        return getValue(ctx);
+    }
+
+    @Override
+    public Object visitValueExpr(FileQueryParser.ValueExprContext ctx) {
+        var literal = ctx.value();
+        return getValue(literal);
     }
 
     private Object arithmeticOperation(Object left, Object right, String operator) {
@@ -80,6 +114,8 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
             throw new IllegalArgumentException("Comparison is only supported between same types of Number or String.");
         }
         return switch (operator) {
+            case "==" -> cmp == 0;
+            case "!=" -> cmp != 0;
             case ">" -> cmp > 0;
             case "<" -> cmp < 0;
             case ">=" -> cmp >= 0;
@@ -130,9 +166,14 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitComparisonExpr(FileQueryParser.ComparisonExprContext ctx) {
-        var left = visit(ctx.conditionExpr(0));
-        var right = visit(ctx.conditionExpr(1));
+    public Object visitConditionExpr(FileQueryParser.ConditionExprContext ctx) {
+        return visit(ctx.common());
+    }
+
+    @Override
+    public Boolean visitComparisonExpr(FileQueryParser.ComparisonExprContext ctx) {
+        var left = visitConditionExpr(ctx.conditionExpr(0));
+        var right = visitConditionExpr(ctx.conditionExpr(1));
         return comparisonOperation(left, right, ctx.comparator().getText());
     }
 
@@ -140,8 +181,6 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
     public Object visitCommonExpr(FileQueryParser.CommonExprContext ctx) {
         return visit(ctx.common());
     }
-
-
 
     @Override
     public Object visitUppercase(FileQueryParser.UppercaseContext ctx) {
@@ -170,7 +209,7 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionPathExpr(FileQueryParser.FunctionPathExprContext ctx) {
-        // TODO
+        // TODO: Implement path traversal
         return super.visitFunctionPathExpr(ctx);
     }
 
