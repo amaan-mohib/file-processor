@@ -24,9 +24,7 @@ public class InsertVisitor extends FileQueryBaseVisitor<Void> {
             throw new SyntaxException("The number of columns and values do not match");
         }
         Map<String, Object> row = new HashMap<>();
-        IntStream.range(0, columns.size()).forEach(index -> {
-            row.put(columns.get(index), values.get(index));
-        });
+        IntStream.range(0, columns.size()).forEach(index -> row.put(columns.get(index), values.get(index)));
         data.add(row);
         System.out.println("row: "+row);
         return null;

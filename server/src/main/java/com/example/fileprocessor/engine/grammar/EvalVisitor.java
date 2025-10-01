@@ -42,9 +42,7 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
         if (isAll) {
             return headers;
         } else {
-            ctx.identifier().forEach(identifierContext -> {
-                columns.add(identifierContext.getText());
-            });
+            ctx.identifier().forEach(identifierContext -> columns.add(identifierContext.getText()));
         }
         return columns;
     }

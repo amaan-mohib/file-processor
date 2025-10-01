@@ -27,9 +27,7 @@ public class SelectVisitor extends FileQueryBaseVisitor<List<Map<String, Object>
             }
             if(toInclude) {
                 Map<String, Object> newRow = new HashMap<>();
-                columns.forEach(column -> {
-                    newRow.put(column, row.get(column));
-                });
+                columns.forEach(column -> newRow.put(column, row.get(column)));
                 newData.add(newRow);
             }
         });
