@@ -7,13 +7,15 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class FileSerializerFactory {
-    public CsvSerializer csvSerializer;
+    public final CsvSerializer csvSerializer;
+    public final JsonSerializer jsonSerializer;
+    public final XmlSerializer xmlSerializer;
 
     public FileSerializer getSerializer(FileMetadata.FileType fileType) {
         return switch (fileType) {
             case CSV -> csvSerializer;
-            // TODO: implement JSON and XML parser
-            case JSON, XML -> throw new IllegalArgumentException("Unknown file type: " + fileType);
+            case JSON -> jsonSerializer;
+            case XML -> xmlSerializer;
         };
     }
 }

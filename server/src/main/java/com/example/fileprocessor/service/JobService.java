@@ -3,10 +3,11 @@ package com.example.fileprocessor.service;
 import com.example.fileprocessor.entity.FileMetadata;
 import com.example.fileprocessor.entity.Job;
 import com.example.fileprocessor.entity.User;
-import com.example.fileprocessor.queue.MessageProducer;
+import com.example.fileprocessor.queue.event.JobCreatedEvent;
 import com.example.fileprocessor.repository.JobRepository;
 import com.example.fileprocessor.storage.FileSystemStorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,7 @@ public class JobService {
     private final FileMetadataService fileMetadataService;
     private final FileSystemStorageService storageService;
     private final FileProcessingService fileProcessingService;
-    private final MessageProducer messageProducer;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Job save(Job job) {
         return jobRepository.save(job);
@@ -56,8 +57,8 @@ public class JobService {
         List<Job> jobs = new ArrayList<>();
         for (FileMetadata file : files) {
             Job newJob = create(file.getFileKey(), user, query);
-            messageProducer.sendMessage("job:" + newJob.getJobKey());
             jobs.add(newJob);
+            eventPublisher.publishEvent(new JobCreatedEvent(newJob.getJobKey()));
         }
         return jobs;
     }

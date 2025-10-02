@@ -26,6 +26,7 @@ public class MessageConsumer {
                 jobService.runJob(UUID.fromString(messageArg), null);
             } catch (Exception e) {
                 log.info("Error already logged for the job");
+                e.printStackTrace();
                 log.error(e.getMessage());
             }
         }
