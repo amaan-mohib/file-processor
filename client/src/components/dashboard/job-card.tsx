@@ -17,7 +17,7 @@ interface JobCardProps {
   job: IJob;
 }
 
-const getStatus = (status: IJob["status"]) => {
+export const getStatus = (status: IJob["status"]) => {
   const map: Record<
     IJob["status"],
     {
@@ -54,7 +54,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
     <Card>
       <CardHeader>
         <Badge
-          className={status.color ? status.color : ""}
+          className={`rounded-full ${status.color ? status.color : ""}`}
           variant={status.variant}>
           {status.text}
         </Badge>
@@ -70,6 +70,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
         </CardAction>
       </CardHeader>
       <CardContent>
+        <p className="text-muted-foreground text-sm">File: {job.fileName}</p>
         <p className="text-muted-foreground text-sm">
           {job.status === "COMPLETED" && (
             <>Completed at: {formatFullDate(job.completedAt)}</>
