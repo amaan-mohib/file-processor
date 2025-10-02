@@ -6,9 +6,12 @@ import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.queue.event.JobCreatedEvent;
 import com.example.fileprocessor.repository.JobRepository;
 import com.example.fileprocessor.storage.FileSystemStorageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +38,32 @@ public class JobService {
         return jobRepository.findByJobKeyAndUser(uuid, user);
     }
 
-    public List<Job> getRecentJobs(User user, Integer limit) {
-        return jobRepository.findByUserOrderByCreatedAtDesc(user, Limit.of(limit));
+    private List<ObjectNode> getJobsWithFileName(List<Job> jobs) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return jobs.stream().map(job -> {
+            ObjectNode node = mapper.valueToTree(job);
+            node.put("fileName", job.getFile().getFileName());
+            return node;
+        }).toList();
+    }
+
+    public List<ObjectNode> getRecentJobs(User user, Integer limit) {
+        List<Job> jobs = jobRepository.findByUserOrderByCreatedAtDesc(user, Limit.of(limit));
+        return getJobsWithFileName(jobs);
+    }
+
+    public Page<ObjectNode> getAllJobs(User user, int page, int size, String sortBy, String sortDirection) {
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Objects.equals(sortDirection, "asc") ?
+                        Sort.by(sortBy).ascending() :
+                        Sort.by(sortBy).descending()
+        );
+        var jobs = jobRepository.findByUser(user, pageable);
+        var content = getJobsWithFileName(jobs.toList());
+        return new PageImpl<>(content, pageable, jobs.getTotalElements());
     }
 
     public void delete(Long id) {

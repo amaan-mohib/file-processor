@@ -5,15 +5,18 @@ import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.payload.request.JobCreateDto;
 import com.example.fileprocessor.payload.request.JobSaveDto;
 import com.example.fileprocessor.payload.response.GenericResponse;
+import com.example.fileprocessor.payload.response.PageResponse;
 import com.example.fileprocessor.service.FileJobService;
 import com.example.fileprocessor.service.JobService;
 import com.example.fileprocessor.storage.FileSystemStorageService;
 import com.example.fileprocessor.util.GenericUtil;
 import com.example.fileprocessor.util.SecurityUtil;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,6 +38,25 @@ public class JobController {
     private final JobService jobService;
     private final FileJobService fileJobService;
     private final FileSystemStorageService storageService;
+
+    @GetMapping("/")
+    public ResponseEntity<?> findAll(
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset,
+            @RequestParam(value = "pageSize", defaultValue = "25") Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(value = "sortDirection", defaultValue = "asc") String sortDirection
+    ) {
+        User currentUser = SecurityUtil.getCurrentUser();
+        Page<ObjectNode> jobs = jobService.getAllJobs(currentUser, offset, pageSize, sortBy, sortDirection);
+        PageResponse<ObjectNode> response = new PageResponse<>(
+                jobs.getContent(),
+                jobs.getNumber(),
+                jobs.getSize(),
+                jobs.getTotalElements(),
+                jobs.getTotalPages()
+        );
+        return new ResponseEntity<>(new GenericResponse<>("ok", 200, response), HttpStatus.OK);
+    }
 
     @GetMapping("/{id:.+}")
     public ResponseEntity<GenericResponse<Job>> findById(@PathVariable UUID id) {
@@ -96,7 +118,7 @@ public class JobController {
     @GetMapping("/recent")
     public ResponseEntity<?> getRecentJobs(@RequestParam(value = "limit", defaultValue = "25") Integer limit) {
         User currentUser = SecurityUtil.getCurrentUser();
-        List<Job> jobs = jobService.getRecentJobs(currentUser, limit);
+        List<ObjectNode> jobs = jobService.getRecentJobs(currentUser, limit);
         return new ResponseEntity<>(new GenericResponse<>("Recent jobs", 200, jobs), HttpStatus.OK);
     }
 
