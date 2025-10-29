@@ -5,11 +5,11 @@ import { getJobs } from "@/lib/api/jobs";
 import useStore from "@/lib/store/useStore";
 import type { IJob } from "@/lib/types";
 import { formatFullDate } from "@/lib/utils";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/_authenticated/jobs")({
+export const Route = createFileRoute("/_authenticated/jobs/")({
   component: RouteComponent,
 });
 
@@ -28,7 +28,11 @@ function RouteComponent() {
 
   useEffect(() => {
     setLoading(true);
-    getJobs({ offset: pagination.pageIndex, pageSize: pagination.pageSize })
+    getJobs({
+      offset: pagination.pageIndex,
+      pageSize: pagination.pageSize,
+      sortDirection: "desc",
+    })
       .then(({ content, totalElements }) => {
         setLoading(false);
         setTotalRows(totalElements);
@@ -44,6 +48,16 @@ function RouteComponent() {
     {
       accessorKey: "jobKey",
       header: "Key",
+      cell({ row }) {
+        return (
+          <Link
+            to="/jobs/$jobId"
+            params={{ jobId: row.original.jobKey }}
+            className="hover:underline">
+            {row.getValue("jobKey")}
+          </Link>
+        );
+      },
     },
     {
       accessorKey: "status",
@@ -65,7 +79,7 @@ function RouteComponent() {
       cell({ row }) {
         return (
           <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-            {row.getValue("fileName")}
+            {row.original.file?.fileName}
           </code>
         );
       },
@@ -97,15 +111,14 @@ function RouteComponent() {
   ];
 
   return (
-    <div className="flex flex-1 flex-col gap-4 max-h-[calc(100vh-5rem)]">
-      <DataTable
-        data={data}
-        columns={columns}
-        pagination={pagination}
-        loading={loading}
-        onPaginationChange={setPagination}
-        totalRows={totalRows}
-      />
-    </div>
+    <DataTable
+      data={data}
+      columns={columns}
+      pagination={pagination}
+      loading={loading}
+      onPaginationChange={setPagination}
+      totalRows={totalRows}
+      height={"calc(100vh - 10rem"}
+    />
   );
 }

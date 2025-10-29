@@ -7,14 +7,16 @@ import com.example.fileprocessor.payload.request.JobCreateDto;
 import com.example.fileprocessor.repository.FileMetadataRepository;
 import com.example.fileprocessor.storage.StorageService;
 import com.example.fileprocessor.util.GenericUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,16 +32,37 @@ public class FileMetadataService {
         return fileMetadataRepository.findById(id);
     }
 
-    public List<FileMetadata> findByUser(User user) {
-        return fileMetadataRepository.findByUser(user);
-    }
-
     public Optional<FileMetadata> findByIdAndUser(Long id, User user) {
         return fileMetadataRepository.findByIdAndUser(id, user);
     }
 
     public Optional<FileMetadata> findByKeyAndUser(UUID uuid, User user) {
         return fileMetadataRepository.findByFileKeyAndUser(uuid, user);
+    }
+
+    public Page<?> getAllFiles(User user, int page, int size, String sortBy, String sortDirection) {
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Objects.equals(sortDirection, "asc") ?
+                        Sort.by(sortBy).ascending() :
+                        Sort.by(sortBy).descending()
+        );
+        var files = fileMetadataRepository.findByUser(user, pageable);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        var res = files.stream().map(file -> {
+            var obj = new HashMap<String, Object>();
+            obj.put("id", file.getId());
+            obj.put("fileKey", file.getFileKey());
+            obj.put("fileName", file.getFileName());
+            obj.put("fileType", file.getFileType());
+            obj.put("originalSize", file.getOriginalSize());
+            obj.put("createdAt", file.getCreatedAt());
+            return mapper.valueToTree(obj);
+        }).toList();
+        return new PageImpl<>(res, pageable, files.getTotalElements());
     }
 
     @Transactional

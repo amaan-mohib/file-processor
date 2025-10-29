@@ -1,7 +1,7 @@
 import api from ".";
-import type { IFile, IJob, IPage } from "../types";
+import type { IFile, IPage } from "../types";
 
-export const getJobs = async ({
+export const getFiles = async ({
   offset = 0,
   pageSize = 25,
   sortDirection,
@@ -26,41 +26,20 @@ export const getJobs = async ({
     data: { data },
   } = await api.get<{
     data: {
-      content: IJob[];
+      content: IFile[];
       page: number;
       size: number;
       totalElements: number;
       totalPages: number;
     };
-  }>(`/job/?${search.toString()}`);
+  }>(`/file/?${search.toString()}`);
   return data;
 };
 
-export const getJob = async (jobKey: string) => {
-  const {
-    data: { data },
-  } = await api.get<{
-    data: {
-      file: IFile;
-      job: IJob;
-    };
-  }>(`/job/${jobKey}`);
-  return data;
-};
-
-export const getOutputFile = async (jobKey: string) => {
-  const { data } = await api.get(`/job/output/${jobKey}`);
+export const getInputFile = async (fileKey: string) => {
+  const { data } = await api.get(`/file/${fileKey}`);
   if (typeof data === "string") {
     return data;
   }
   return JSON.stringify(data);
-};
-
-export const rerunJob = async (jobKey: string) => {
-  const {
-    data: { data },
-  } = await api.post<{
-    data: IJob;
-  }>(`/job/rerun/${jobKey}`);
-  return data;
 };

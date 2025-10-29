@@ -7,6 +7,7 @@ import com.example.fileprocessor.queue.event.JobCreatedEvent;
 import com.example.fileprocessor.repository.JobRepository;
 import com.example.fileprocessor.storage.FileSystemStorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
@@ -41,9 +42,14 @@ public class JobService {
     private List<ObjectNode> getJobsWithFileName(List<Job> jobs) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return jobs.stream().map(job -> {
             ObjectNode node = mapper.valueToTree(job);
-            node.put("fileName", job.getFile().getFileName());
+            var file = new HashMap<String, Object>();
+            file.put("fileName", job.getFile().getFileName());
+            file.put("fileKey", String.valueOf(job.getFile().getFileKey()));
+            file.put("fileType", job.getFile().getFileType());
+            node.set("file", mapper.valueToTree(file));
             return node;
         }).toList();
     }

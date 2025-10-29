@@ -1,5 +1,6 @@
 package com.example.fileprocessor.controller;
 
+import com.example.fileprocessor.entity.FileMetadata;
 import com.example.fileprocessor.entity.Job;
 import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.payload.request.JobCreateDto;
@@ -21,10 +22,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -58,11 +61,20 @@ public class JobController {
         return new ResponseEntity<>(new GenericResponse<>("ok", 200, response), HttpStatus.OK);
     }
 
+    @Transactional
     @GetMapping("/{id:.+}")
-    public ResponseEntity<GenericResponse<Job>> findById(@PathVariable UUID id) {
+    public ResponseEntity<GenericResponse<?>> findById(@PathVariable UUID id) {
         User currentUser = SecurityUtil.getCurrentUser();
         Job job = jobService.findByKeyAndUser(id, currentUser).orElseThrow();
-        return new ResponseEntity<>(new GenericResponse<>("ok", 200, job), HttpStatus.OK);
+        FileMetadata file = job.getFile();
+        var res = new HashMap<String, Object>();
+        res.put("job", job);
+        var fileRes = new HashMap<String, Object>();
+        fileRes.put("fileKey", file.getFileKey());
+        fileRes.put("fileName", file.getFileName());
+        fileRes.put("fileType", file.getFileType());
+        res.put("file", fileRes);
+        return new ResponseEntity<>(new GenericResponse<>("ok", 200, res), HttpStatus.OK);
     }
 
     @GetMapping("/output/{id:.+}")
@@ -113,6 +125,13 @@ public class JobController {
         List<Job> result = fileJobService.uploadAndRunJobs(dto, query, currentUser);
 
         return new ResponseEntity<>(new GenericResponse<>("Job run", 200, result), HttpStatus.OK);
+    }
+
+    @PostMapping("/rerun/{id:.+}")
+    public ResponseEntity<GenericResponse<Job>> rerunJob(@PathVariable UUID id) {
+        User currentUser = SecurityUtil.getCurrentUser();
+        List<Job> result = fileJobService.rerunJob(id, currentUser);
+        return new ResponseEntity<>(new GenericResponse<>("Job rerun", 200, result.getFirst()), HttpStatus.OK);
     }
 
     @GetMapping("/recent")

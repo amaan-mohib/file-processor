@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -27,5 +28,12 @@ public class FileJobService {
             log.error(e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    @Transactional
+    public List<Job> rerunJob(UUID jobKey, User user) throws RuntimeException {
+        Job job = jobService.findByKeyAndUser(jobKey, user).orElseThrow();
+        FileMetadata file = job.getFile();
+        return jobService.createAndRunJobs(List.of(file), job.getQuery(), user);
     }
 }

@@ -63,7 +63,7 @@ const RecentJobs: React.FC<RecentJobsProps> = () => {
         ) : (
           <div className="flex flex-col gap-4">
             {data.map((item) => (
-              <JobCard key={item.jobKey} job={item} />
+              <JobCard key={item.jobKey} job={item} file={item.file} />
             ))}
           </div>
         )}

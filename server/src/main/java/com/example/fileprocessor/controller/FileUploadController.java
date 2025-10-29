@@ -4,15 +4,18 @@ import com.example.fileprocessor.entity.FileMetadata;
 import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.payload.request.JobCreateDto;
 import com.example.fileprocessor.payload.response.GenericResponse;
+import com.example.fileprocessor.payload.response.PageResponse;
 import com.example.fileprocessor.service.FileMetadataService;
 import com.example.fileprocessor.storage.StorageException;
 import com.example.fileprocessor.storage.StorageFileNotFoundException;
 import com.example.fileprocessor.storage.StorageService;
 import com.example.fileprocessor.util.GenericUtil;
 import com.example.fileprocessor.util.SecurityUtil;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +44,25 @@ public class FileUploadController {
         }
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<?> findAll(
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset,
+            @RequestParam(value = "pageSize", defaultValue = "25") Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(value = "sortDirection", defaultValue = "asc") String sortDirection
+    ) {
+        User currentUser = SecurityUtil.getCurrentUser();
+        Page<?> files = fileService.getAllFiles(currentUser, offset, pageSize, sortBy, sortDirection);
+        PageResponse<?> response = new PageResponse<>(
+                files.getContent(),
+                files.getNumber(),
+                files.getSize(),
+                files.getTotalElements(),
+                files.getTotalPages()
+        );
+        return new ResponseEntity<>(new GenericResponse<>("ok", 200, response), HttpStatus.OK);
     }
 
     @PostMapping("/")

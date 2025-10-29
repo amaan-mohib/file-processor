@@ -23,9 +23,18 @@ export interface IJob {
   processedSize: Number | null;
   failedReason: string | null;
   createdAt: string;
-  updatedAt: string;
-  startedAt: string;
-  completedAt: string;
+  updatedAt: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  file?: IFile;
+}
+
+export interface IFile {
+  fileKey: string;
+  fileName: string;
+  fileType: "CSV" | "JSON" | "XML";
+  originalSize: number;
+  createdAt: string;
 }
 
 export interface IPage {
