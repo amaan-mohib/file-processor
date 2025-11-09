@@ -6,8 +6,8 @@ import com.example.fileprocessor.entity.FileMetadata;
 import com.example.fileprocessor.deserializer.FileDeserializerFactory;
 import com.example.fileprocessor.serializer.FileSerializer;
 import com.example.fileprocessor.serializer.FileSerializerFactory;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +20,13 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FileProcessingService {
     private final FileDeserializerFactory fileDeserializerFactory;
     private final FileSerializerFactory fileSerializerFactory;
     private final QueryEngine queryEngine;
-    @Getter
-    @Setter
+
+    @Getter @Setter
     private List<String> headers;
 
     public List<Map<String, Object>> processFile(FileMetadata file, InputStream inputStream, String query) throws Exception {

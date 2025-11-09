@@ -19,6 +19,76 @@ A full-stack application that allows users to upload, process, and query files i
             └── resources/ # Application properties and DB migrations
 ```
 
+## Architecture diagram
+
+Below is a high-level architecture diagram showing how the frontend, controllers, services, queue, storage and the database interact.
+
+```mermaid
+flowchart LR
+  %% Left-to-right layout for clarity
+  Client["React app"]
+
+  subgraph API [Backend — Controllers]
+    Auth["AuthenticationController"]
+    FileAPI["FileUploadController"]
+    JobAPI["JobController"]
+  end
+
+  subgraph Services [Core services]
+    Jwt["JwtService"]
+    Refresh["RefreshTokenService"]
+    FileMeta["FileMetadataService"]
+    JobSvc["JobService"]
+    FileProc["FileProcessingService"]
+    Storage["FileSystemStorageService"]
+  end
+
+  subgraph Pipeline [Processing pipeline]
+    Deser["Deserializers<br/>(CSV, JSON, XML)"]
+    Engine["QueryEngine + Parser"]
+    Ser["Serializers"]
+  end
+
+  subgraph Infra [Infrastructure]
+    Rabbit["RabbitMQ"]
+    Worker["Job listener"]
+    DB[(Postgres)]
+  end
+
+  %% Primary flows (minimal crossings)
+  Client -->|HTTP| Auth
+  Client -->|HTTP| FileAPI
+  Client -->|HTTP| JobAPI
+
+  Auth --> Jwt
+  Auth --> Refresh
+  Auth --> DB
+
+  FileAPI --> FileMeta
+  FileAPI --> Storage
+  FileMeta --> DB
+
+  JobAPI --> JobSvc
+  JobSvc --> FileMeta
+  JobSvc --> Storage
+  JobSvc --> DB
+
+  %% Async processing
+  JobSvc -->|publish event| Rabbit
+  Rabbit --> Worker
+  Worker --> JobSvc
+
+  %% File processing pipeline (linear)
+  JobSvc --> FileProc
+  FileProc --> Deser --> Engine --> Ser --> Storage
+
+  %% Infra connections
+  Worker --> Storage
+  Worker --> DB
+
+  %% End
+```
+
 ## Features
 
 - User authentication and authorization
