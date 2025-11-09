@@ -5,6 +5,12 @@ export interface IUser {
   createdAt: string;
 }
 
+export interface ILoginResponse {
+  token: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
 export interface IAuth {
   user: IUser | null;
   isAuthenticated: boolean;

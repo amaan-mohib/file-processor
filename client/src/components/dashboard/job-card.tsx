@@ -83,24 +83,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, download, file }) => {
             <Button
               disabled={job.status !== "COMPLETED"}
               onClick={() => {
-                getOutputFile(job.jobKey).then((data) => {
-                  const blob = new Blob([data], {
-                    type:
-                      file.fileType === "CSV"
-                        ? "text/csv"
-                        : file.fileType === "JSON"
-                          ? "application/json"
-                          : "application/xml",
-                  });
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  document.body.appendChild(a);
-                  a.style = "display: none";
-                  a.href = url;
-                  a.download = `${job.fileName.split(".")[0]}_output.${file.fileType.toLowerCase()}`;
-                  a.click();
-                  window.URL.revokeObjectURL(url);
-                });
+                getOutputFile(job.jobKey);
               }}
               size={"sm"}>
               Download
@@ -123,24 +106,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, download, file }) => {
           <Button
             onClick={() => {
               if (!file) return;
-              getInputFile(file?.fileKey).then((data) => {
-                const blob = new Blob([data], {
-                  type:
-                    file.fileType === "CSV"
-                      ? "text/csv"
-                      : file.fileType === "JSON"
-                        ? "application/json"
-                        : "application/xml",
-                });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                document.body.appendChild(a);
-                a.style = "display: none";
-                a.href = url;
-                a.download = file.fileName;
-                a.click();
-                window.URL.revokeObjectURL(url);
-              });
+              getInputFile(file.fileKey);
             }}
             className="cursor-pointer h-fit ml-[-8px]"
             size={"sm"}

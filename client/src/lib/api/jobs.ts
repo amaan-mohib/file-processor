@@ -1,4 +1,5 @@
 import api from ".";
+import { REFRESH_TOKEN_KEY } from "../auth";
 import type { IFile, IJob, IPage } from "../types";
 
 export const getJobs = async ({
@@ -49,11 +50,8 @@ export const getJob = async (jobKey: string) => {
 };
 
 export const getOutputFile = async (jobKey: string) => {
-  const { data } = await api.get(`/job/output/${jobKey}`);
-  if (typeof data === "string") {
-    return data;
-  }
-  return JSON.stringify(data);
+  const url = `${import.meta.env.VITE_API_BASE_URL}/job/output/${jobKey}?accessToken=${localStorage.getItem(REFRESH_TOKEN_KEY)}`;
+  window.open(url, "_blank");
 };
 
 export const rerunJob = async (jobKey: string) => {

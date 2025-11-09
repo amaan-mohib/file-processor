@@ -10,6 +10,7 @@ export const useAuth = () => {
       setAuth({ isLoading: true });
       const user = await authService.getProfile();
       setAuth({ user, isAuthenticated: true });
+      authService.scheduleRefresh();
     } catch (error) {
       authToken().clear();
     } finally {

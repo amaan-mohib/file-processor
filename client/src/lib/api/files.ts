@@ -1,4 +1,5 @@
 import api from ".";
+import { REFRESH_TOKEN_KEY } from "../auth";
 import type { IFile, IPage } from "../types";
 
 export const getFiles = async ({
@@ -37,9 +38,6 @@ export const getFiles = async ({
 };
 
 export const getInputFile = async (fileKey: string) => {
-  const { data } = await api.get(`/file/${fileKey}`);
-  if (typeof data === "string") {
-    return data;
-  }
-  return JSON.stringify(data);
+  const url = `${import.meta.env.VITE_API_BASE_URL}/file/serve/${fileKey}?accessToken=${localStorage.getItem(REFRESH_TOKEN_KEY)}`;
+  window.open(url, "_blank");
 };

@@ -1,6 +1,6 @@
-import { router } from "@/main";
 import axios from "axios";
 import { toast } from "sonner";
+import { AUTH_TOKEN_KEY, authService, REFRESH_TOKEN_KEY } from "../auth";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -9,6 +9,17 @@ const api = axios.create({
   },
   timeout: 10_000,
 });
+
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null) => {
+  failedQueue.forEach((prom) => {
+    if (error) prom.reject(error);
+    else prom.resolve(token || null);
+  });
+  failedQueue = [];
+};
 
 api.interceptors.request.use(
   (config) => {
@@ -30,18 +41,38 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if ([401, 403].includes(error.response.status) && !originalRequest._retry) {
-      toast.error("Unauthorized");
       originalRequest._retry = true;
-      router.navigate({
-        to: "/login",
-        search: { redirect: window.location.href || "" },
-      });
-      // Handle token refresh logic here
-      // For example, make a request to a refresh token endpoint
-      // const newAccessToken = await refreshToken();
-      // localStorage.setItem('authToken', newAccessToken);
-      // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-      // return api(originalRequest); // Retry the original request
+
+      if (isRefreshing) {
+        // Queue the request until refresh is done
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then((token) => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return api(originalRequest);
+        });
+      }
+
+      isRefreshing = true;
+
+      try {
+        const { refreshToken } = await authService.refresh();
+        api.defaults.headers.Authorization = `Bearer ${refreshToken}`;
+        processQueue(null, refreshToken);
+
+        // Retry the original request
+        originalRequest.headers.Authorization = `Bearer ${refreshToken}`;
+        return api(originalRequest);
+      } catch (err) {
+        toast.error("Unauthorized");
+        processQueue(err, null);
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        window.location.href = `/login?redirect=${window.location.pathname}`;
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
+      }
     } else if (error.response.status === 500) {
       toast.error(error.response.message || "Something went wrong");
     }
