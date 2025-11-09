@@ -1,11 +1,13 @@
 package com.example.fileprocessor.controller;
 
 import com.example.fileprocessor.entity.FileMetadata;
+import com.example.fileprocessor.entity.RefreshToken;
 import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.payload.request.JobCreateDto;
 import com.example.fileprocessor.payload.response.GenericResponse;
 import com.example.fileprocessor.payload.response.PageResponse;
 import com.example.fileprocessor.service.FileMetadataService;
+import com.example.fileprocessor.service.RefreshTokenService;
 import com.example.fileprocessor.storage.StorageException;
 import com.example.fileprocessor.storage.StorageFileNotFoundException;
 import com.example.fileprocessor.storage.StorageService;
@@ -31,11 +33,16 @@ import java.util.*;
 public class FileUploadController {
     private final StorageService storageService;
     private final FileMetadataService fileService;
+    private final RefreshTokenService refreshTokenService;
 
-    @GetMapping("/{id:.+}")
+    @GetMapping("/serve/{id:.+}")
     @ResponseBody
-    public ResponseEntity<?> serveFile(@PathVariable UUID id) {
-        User currentUser = SecurityUtil.getCurrentUser();
+    public ResponseEntity<?> serveFile(@PathVariable UUID id, @RequestParam(value = "accessToken") String accessToken) {
+        RefreshToken refreshToken = refreshTokenService.getRefreshToken(accessToken).orElseThrow();
+        if (refreshTokenService.isExpired(refreshToken)) {
+            return new ResponseEntity<>(new GenericResponse<>("Access token expired", 401), HttpStatus.UNAUTHORIZED);
+        }
+        User currentUser = refreshToken.getUser();
         FileMetadata fileMetadata = fileService.findByKeyAndUser(id, currentUser).orElseThrow();
         Resource file = storageService.loadAsResource(fileMetadata.getStoragePath());
 

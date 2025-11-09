@@ -2,6 +2,7 @@ package com.example.fileprocessor.controller;
 
 import com.example.fileprocessor.entity.FileMetadata;
 import com.example.fileprocessor.entity.Job;
+import com.example.fileprocessor.entity.RefreshToken;
 import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.payload.request.JobCreateDto;
 import com.example.fileprocessor.payload.request.JobSaveDto;
@@ -9,6 +10,7 @@ import com.example.fileprocessor.payload.response.GenericResponse;
 import com.example.fileprocessor.payload.response.PageResponse;
 import com.example.fileprocessor.service.FileJobService;
 import com.example.fileprocessor.service.JobService;
+import com.example.fileprocessor.service.RefreshTokenService;
 import com.example.fileprocessor.storage.FileSystemStorageService;
 import com.example.fileprocessor.util.GenericUtil;
 import com.example.fileprocessor.util.SecurityUtil;
@@ -41,6 +43,7 @@ public class JobController {
     private final JobService jobService;
     private final FileJobService fileJobService;
     private final FileSystemStorageService storageService;
+    private final RefreshTokenService refreshTokenService;
 
     @GetMapping("/")
     public ResponseEntity<?> findAll(
@@ -79,8 +82,12 @@ public class JobController {
 
     @GetMapping("/output/{id:.+}")
     @ResponseBody
-    public ResponseEntity<?> serveFile(@PathVariable UUID id) {
-        User currentUser = SecurityUtil.getCurrentUser();
+    public ResponseEntity<?> serveFile(@PathVariable UUID id, @RequestParam(value = "accessToken") String accessToken) {
+        RefreshToken refreshToken = refreshTokenService.getRefreshToken(accessToken).orElseThrow();
+        if (refreshTokenService.isExpired(refreshToken)) {
+            return new ResponseEntity<>(new GenericResponse<>("Access token expired", 401), HttpStatus.UNAUTHORIZED);
+        }
+        User currentUser = refreshToken.getUser();
         Job job = jobService.findByKeyAndUser(id, currentUser).orElseThrow();
         if (job.getResultPath() == null) {
             return new ResponseEntity<>(new GenericResponse<>("Job has no output file", 404), HttpStatus.NOT_FOUND);
@@ -93,7 +100,7 @@ public class JobController {
         return ResponseEntity.ok()
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + file.getFilename() + "\""
+                        "attachment; filename=\"" + "output_" + file.getFilename() + "\""
                 ).body(file);
     }
 

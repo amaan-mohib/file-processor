@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -39,7 +40,7 @@ public class FileProcessingService {
         FileSerializer fileSerializer = fileSerializerFactory.getSerializer(file.getFileType());
         Path outputPath = Path.of("storage/output-dir", userId.toString());
         Files.createDirectories(outputPath);
-        outputPath = outputPath.resolve(file.getFileKey() + "_" + file.getFileName());
+        outputPath = outputPath.resolve(UUID.randomUUID() + "_" + file.getFileName());
 
         fileSerializer.serialize(result, this.getHeaders(), outputPath);
         return outputPath.toString();

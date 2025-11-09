@@ -34,7 +34,18 @@ public class SecurityConfiguration {
                     cors.configurationSource(corsConfigurationSource());
                 })
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(
+                        authorizeRequests ->
+                                authorizeRequests.
+                                        requestMatchers(
+                                                "/auth/**",
+                                                "/file/serve/**",
+                                                "/job/output/**"
+                                        )
+                                        .permitAll()
+                                        .anyRequest()
+                                        .authenticated()
+                )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);

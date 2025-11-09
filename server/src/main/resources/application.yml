@@ -21,7 +21,8 @@ spring:
 security:
   jwt:
     secret: ${JWT_SECRET:2100628d5a6c27d0cf342603f51d19dd404278267fce707dc2b55d2406642b0a}
-    expiration: ${JWT_EXPIRATION:3600000}
+    expiration: ${JWT_EXPIRATION:600000}
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION:86400000}
   cors:
     allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000}
 server:
