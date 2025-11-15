@@ -1,6 +1,7 @@
 package com.example.fileprocessor.controller;
 
 import com.example.fileprocessor.entity.FileMetadata;
+import com.example.fileprocessor.entity.Job;
 import com.example.fileprocessor.entity.RefreshToken;
 import com.example.fileprocessor.entity.User;
 import com.example.fileprocessor.payload.request.JobCreateDto;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,6 +53,34 @@ public class FileUploadController {
         }
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
+    @Transactional
+    @GetMapping("/{id:.+}")
+    public ResponseEntity<GenericResponse<?>> findById(@PathVariable UUID id) {
+        User currentUser = SecurityUtil.getCurrentUser();
+        FileMetadata file = fileService.findByKeyAndUser(id, currentUser).orElseThrow();
+        List<Job> jobs = file.getJobs();
+        List<Object> jobList = new ArrayList<>();
+        jobs.forEach(job -> {
+            var jobObj = new HashMap<String, Object>();
+            jobObj.put("jobKey", job.getJobKey());
+            jobObj.put("status", job.getStatus());
+            jobObj.put("createdAt", job.getCreatedAt());
+            jobObj.put("completedAt", job.getCompletedAt());
+            jobList.add(jobObj);
+        });
+        var fileObj = new HashMap<String, Object>();
+        fileObj.put("fileKey", file.getFileKey());
+        fileObj.put("fileName", file.getFileName());
+        fileObj.put("fileType", file.getFileType());
+        fileObj.put("originalSize", file.getOriginalSize());
+        fileObj.put("createdAt", file.getCreatedAt());
+
+        var res = new HashMap<String, Object>();
+        res.put("file", fileObj);
+        res.put("jobs", jobList);
+        return new ResponseEntity<>(new GenericResponse<>("ok", 200, res), HttpStatus.OK);
     }
 
     @GetMapping("/")
