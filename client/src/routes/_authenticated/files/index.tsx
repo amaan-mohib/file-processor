@@ -1,11 +1,19 @@
+import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { getFiles } from "@/lib/api/files";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { getFiles, getInputFile } from "@/lib/api/files";
 import useStore from "@/lib/store/useStore";
 import type { IFile } from "@/lib/types";
 import { formatFullDate } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { MoreHorizontalIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/files/")({
   component: RouteComponent,
@@ -24,7 +32,7 @@ function RouteComponent() {
     useStore.setState({ breadcrumbs: [{ name: "Files", link: "/files" }] });
   }, []);
 
-  useEffect(() => {
+  const getData = useCallback(() => {
     setLoading(true);
     getFiles({
       offset: pagination.pageIndex,
@@ -41,6 +49,10 @@ function RouteComponent() {
         console.error(err);
       });
   }, [pagination.pageIndex, pagination.pageSize]);
+
+  useEffect(() => {
+    getData();
+  }, [getData]);
 
   const columns: ColumnDef<IFile>[] = [
     {
@@ -81,6 +93,28 @@ function RouteComponent() {
         return date ? formatFullDate(date) : "-";
       },
     },
+    {
+      header: "Actions",
+      cell({ row }) {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant="outline" aria-label="Open menu" size="icon">
+                <MoreHorizontalIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  getInputFile(row.original.fileKey);
+                }}>
+                Download
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
   ];
 
   return (
@@ -91,7 +125,8 @@ function RouteComponent() {
       loading={loading}
       onPaginationChange={setPagination}
       totalRows={totalRows}
-      height={"calc(100vh - 10rem"}
+      height={"calc(100vh - 9rem"}
+      refresh={getData}
     />
   );
 }

@@ -13,6 +13,7 @@ import { ArrowRight, RefreshCcw } from "lucide-react";
 import useStore from "@/lib/store/useStore";
 import JobCard from "./job-card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface RecentJobsProps {}
 
@@ -57,17 +58,19 @@ const RecentJobs: React.FC<RecentJobsProps> = () => {
           </Tooltip>
         </CardAction>
       </CardHeader>
-      <CardContent className="flex-1 max-h-[calc(100vh-13rem)] overflow-auto">
-        {data.length === 0 ? (
-          <p className="text-muted-foreground text-sm">No jobs ran</p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {data.map((item) => (
-              <JobCard key={item.jobKey} job={item} file={item.file} />
-            ))}
-          </div>
-        )}
-      </CardContent>
+      <ScrollArea className="h-[calc(100vh-13rem)]">
+        <CardContent>
+          {data.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No jobs ran</p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {data.map((item) => (
+                <JobCard key={item.jobKey} job={item} file={item.file} />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </ScrollArea>
     </Card>
   );
 };

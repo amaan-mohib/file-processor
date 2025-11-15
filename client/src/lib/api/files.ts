@@ -1,6 +1,6 @@
 import api from ".";
 import { REFRESH_TOKEN_KEY } from "../auth";
-import type { IFile, IPage } from "../types";
+import type { IFile, IJob, IPage } from "../types";
 
 export const getFiles = async ({
   offset = 0,
@@ -34,6 +34,17 @@ export const getFiles = async ({
       totalPages: number;
     };
   }>(`/file/?${search.toString()}`);
+  return data;
+};
+export const getFile = async (fileKey: string) => {
+  const {
+    data: { data },
+  } = await api.get<{
+    data: {
+      file: IFile;
+      jobs: IJob[];
+    };
+  }>(`/file/${fileKey}`);
   return data;
 };
 

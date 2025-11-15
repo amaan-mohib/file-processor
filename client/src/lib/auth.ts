@@ -43,6 +43,7 @@ export const authService = {
   },
   refresh: async () => {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_TOKEN_KEY);
     if (!refreshToken) throw new Error("No refresh token available");
     const { data } = await api.post<ILoginResponse>("/auth/refresh", {
       refreshToken,

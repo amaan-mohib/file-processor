@@ -14,13 +14,13 @@ import type { VariantProps } from "class-variance-authority";
 import { formatFullDate } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { getOutputFile, rerunJob } from "@/lib/api/jobs";
-import { getInputFile } from "@/lib/api/files";
 import { toast } from "sonner";
 
 interface JobCardProps {
   job: IJob;
   download?: boolean;
   file?: IFile;
+  hideActions?: boolean;
 }
 
 export const getStatus = (status: IJob["status"]) => {
@@ -53,7 +53,12 @@ export const getStatus = (status: IJob["status"]) => {
   return map[status];
 };
 
-const JobCard: React.FC<JobCardProps> = ({ job, download, file }) => {
+const JobCard: React.FC<JobCardProps> = ({
+  job,
+  download,
+  file,
+  hideActions,
+}) => {
   const status = getStatus(job.status);
 
   return (
@@ -65,55 +70,63 @@ const JobCard: React.FC<JobCardProps> = ({ job, download, file }) => {
           {status.text}
         </Badge>
         <CardDescription>Job ID</CardDescription>
-        <CardTitle>{job.jobKey}</CardTitle>
-        <CardAction className="flex gap-4 items-center">
-          {download && job.status === "COMPLETED" && (
-            <Button
-              onClick={() => {
-                rerunJob(job.jobKey).then(() => {
-                  toast.success("Job re-ran successfully");
-                });
-              }}
-              className="cursor-pointer h-fit"
-              variant={"link"}>
-              Rerun
-            </Button>
-          )}
-          {download && file ? (
-            <Button
-              disabled={job.status !== "COMPLETED"}
-              onClick={() => {
-                getOutputFile(job.jobKey);
-              }}
-              size={"sm"}>
-              Download
-            </Button>
-          ) : (
-            <Link to={`/jobs/$jobId`} params={{ jobId: job.jobKey }}>
+        {hideActions ? (
+          <Link to={`/jobs/$jobId`} params={{ jobId: job.jobKey }}>
+            <CardTitle className="hover:underline">{job.jobKey}</CardTitle>
+          </Link>
+        ) : (
+          <CardTitle>{job.jobKey}</CardTitle>
+        )}
+        {hideActions ? null : (
+          <CardAction className="flex gap-4 items-center">
+            {download && job.status === "COMPLETED" && (
               <Button
-                className="cursor-pointer h-fit mr-[-10px]"
-                size={"sm"}
+                onClick={() => {
+                  rerunJob(job.jobKey).then(() => {
+                    toast.success("Job re-ran successfully");
+                  });
+                }}
+                className="cursor-pointer h-fit"
                 variant={"link"}>
-                View
+                Rerun
               </Button>
-            </Link>
-          )}
-        </CardAction>
+            )}
+            {download && file ? (
+              <Button
+                disabled={job.status !== "COMPLETED"}
+                onClick={() => {
+                  getOutputFile(job.jobKey);
+                }}
+                size={"sm"}>
+                Download
+              </Button>
+            ) : (
+              <Link to={`/jobs/$jobId`} params={{ jobId: job.jobKey }}>
+                <Button
+                  className="cursor-pointer h-fit mr-[-10px]"
+                  size={"sm"}
+                  variant={"link"}>
+                  View
+                </Button>
+              </Link>
+            )}
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent>
-        <div className="flex items-center">
-          <p className="text-muted-foreground text-sm">File:</p>
-          <Button
-            onClick={() => {
-              if (!file) return;
-              getInputFile(file.fileKey);
-            }}
-            className="cursor-pointer h-fit ml-[-8px]"
-            size={"sm"}
-            variant={"link"}>
-            {file?.fileName}
-          </Button>
-        </div>
+        {file && (
+          <div className="flex items-center">
+            <p className="text-muted-foreground text-sm">File:</p>
+            <Link to={`/files/$fileId`} params={{ fileId: file.fileKey || "" }}>
+              <Button
+                className="cursor-pointer h-fit ml-[-8px]"
+                size={"sm"}
+                variant={"link"}>
+                {file.fileName}
+              </Button>
+            </Link>
+          </div>
+        )}
         <p className="text-muted-foreground text-sm">
           {job.status === "COMPLETED" && job.completedAt && (
             <>Completed at: {formatFullDate(job.completedAt)}</>

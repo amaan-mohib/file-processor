@@ -34,8 +34,10 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  RefreshCwIcon,
 } from "lucide-react";
 import { ScrollArea } from "./scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -45,6 +47,7 @@ interface DataTableProps<TData, TValue> {
   onPaginationChange: OnChangeFn<PaginationState>;
   totalRows: number;
   height?: string | number;
+  refresh?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -55,6 +58,7 @@ export function DataTable<TData, TValue>({
   pagination,
   totalRows,
   height,
+  refresh,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -127,9 +131,17 @@ export function DataTable<TData, TValue>({
         </ScrollArea>
       </div>
       <div className="flex items-center justify-between py-2">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {/* {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected. */}
+        <div>
+          {refresh && (
+            <Tooltip>
+              <TooltipTrigger>
+                <Button onClick={refresh} size={"icon"} variant={"outline"}>
+                  <RefreshCwIcon />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">Refresh</TooltipContent>
+            </Tooltip>
+          )}
         </div>
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2">

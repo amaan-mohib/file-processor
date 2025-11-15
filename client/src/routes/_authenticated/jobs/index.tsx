@@ -1,13 +1,22 @@
 import { getStatus } from "@/components/dashboard/job-card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { getJobs } from "@/lib/api/jobs";
+import { getJobs, getOutputFile, rerunJob } from "@/lib/api/jobs";
 import useStore from "@/lib/store/useStore";
 import type { IJob } from "@/lib/types";
 import { formatFullDate } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { MoreHorizontalIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/jobs/")({
   component: RouteComponent,
@@ -26,7 +35,7 @@ function RouteComponent() {
     useStore.setState({ breadcrumbs: [{ name: "Jobs", link: "/jobs" }] });
   }, []);
 
-  useEffect(() => {
+  const getData = useCallback(() => {
     setLoading(true);
     getJobs({
       offset: pagination.pageIndex,
@@ -43,6 +52,10 @@ function RouteComponent() {
         console.error(err);
       });
   }, [pagination.pageIndex, pagination.pageSize]);
+
+  useEffect(() => {
+    getData();
+  }, [getData]);
 
   const columns: ColumnDef<IJob>[] = [
     {
@@ -108,6 +121,36 @@ function RouteComponent() {
         return date ? formatFullDate(date) : "-";
       },
     },
+    {
+      header: "Actions",
+      cell({ row }) {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant="outline" aria-label="Open menu" size="icon">
+                <MoreHorizontalIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  rerunJob(row.original.jobKey).then(() => {
+                    toast.success("Job re-ran successfully");
+                  });
+                }}>
+                Rerun
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  getOutputFile(row.original.jobKey);
+                }}>
+                Download
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
   ];
 
   return (
@@ -118,7 +161,8 @@ function RouteComponent() {
       loading={loading}
       onPaginationChange={setPagination}
       totalRows={totalRows}
-      height={"calc(100vh - 10rem"}
+      height={"calc(100vh - 9rem"}
+      refresh={getData}
     />
   );
 }
