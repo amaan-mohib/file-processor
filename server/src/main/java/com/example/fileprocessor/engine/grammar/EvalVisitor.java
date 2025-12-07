@@ -2,6 +2,7 @@ package com.example.fileprocessor.engine.grammar;
 
 import com.example.fileprocessor.engine.grammar.gen.FileQueryBaseVisitor;
 import com.example.fileprocessor.engine.grammar.gen.FileQueryParser;
+import com.example.fileprocessor.entity.FileMetadata;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
@@ -10,15 +11,18 @@ import java.util.*;
 public class EvalVisitor extends FileQueryBaseVisitor<Object> {
     private final Map<String, Object> row;
     private final List<String> headers;
+    private final FileMetadata.FileType fileType;
 
-    public EvalVisitor(Map<String, Object> row) {
+    public EvalVisitor(Map<String, Object> row, FileMetadata.FileType fileType) {
         this.row = row;
         this.headers = new ArrayList<>();
+        this.fileType = fileType;
     }
 
-    public EvalVisitor(List<String> headers) {
+    public EvalVisitor(List<String> headers, FileMetadata.FileType fileType) {
         this.headers = headers;
         this.row = new HashMap<>();
+        this.fileType = fileType;
     }
 
     private Object getIdentifier(FileQueryParser.IdentifierContext ctx) {
@@ -205,10 +209,21 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
         return ctx.STRING().getText().replace("\"", "");
     }
 
+    protected Object visitPath(FileQueryParser.PathExpressionContext ctx) {
+        if(!fileType.equals(FileMetadata.FileType.JSON)) {
+            throw new UnsupportedOperationException("Path traversal is only supported for JSON files.");
+        }
+        return new PathResolverVisitor(row).visitPathExpression(ctx, false).current;
+    }
+
+    @Override
+    public Object visitPathExpr(FileQueryParser.PathExprContext ctx) {
+        return this.visitPath(ctx.pathExpression());
+    }
+
     @Override
     public Object visitFunctionPathExpr(FileQueryParser.FunctionPathExprContext ctx) {
-        // TODO: Implement path traversal
-        return super.visitFunctionPathExpr(ctx);
+        return this.visitPath(ctx.pathExpression());
     }
 
     @Override

@@ -2,23 +2,49 @@ package com.example.fileprocessor.engine.grammar;
 
 import com.example.fileprocessor.engine.grammar.gen.FileQueryBaseVisitor;
 import com.example.fileprocessor.engine.grammar.gen.FileQueryParser;
+import com.example.fileprocessor.entity.FileMetadata;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 @AllArgsConstructor
 public class RemoveVisitor extends FileQueryBaseVisitor<Void> {
     private final List<Map<String, Object>> data;
+    private final FileMetadata.FileType fileType;
 
     @Override
     public Void visitRemoveStatement(FileQueryParser.RemoveStatementContext ctx) {
         for (Map<String, Object> row : data) {
             for (var target : ctx.target()) {
-                String key = target.getText();
-                row.remove(key);
+                if (target instanceof FileQueryParser.TargetPathContext) {
+                    if(!fileType.equals(FileMetadata.FileType.JSON)) {
+                        throw new UnsupportedOperationException("Path traversal is only supported for JSON files.");
+                    }
+                    removePath(
+                            row,
+                            ((FileQueryParser.TargetPathContext) target).pathExpression()
+                    );
+                } else {
+                    String key = target.getText();
+                    row.remove(key);
+                }
             }
         }
         return null;
+    }
+
+    private void removePath(Map<String, Object> row, FileQueryParser.PathExpressionContext pathContext) {
+        var target = new PathResolverVisitor(row).visitPathExpression(pathContext, false);
+        if (target.parent instanceof Map && target.key != null) {
+            ((Map<String, Object>) target.parent).remove(target.key);
+        }
+        else if (target.parent instanceof List && target.index != null) {
+            ((List<Object>) target.parent).remove(target.index);
+        }
+        else {
+            throw new RuntimeException("Invalid target for removal");
+        }
     }
 }

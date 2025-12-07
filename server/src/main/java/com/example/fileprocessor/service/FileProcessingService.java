@@ -33,7 +33,7 @@ public class FileProcessingService {
         FileDeserializer fileDeserializer = fileDeserializerFactory.getDeserializer(file.getFileType());
         var deserialized = fileDeserializer.deserialize(inputStream);
         this.setHeaders(deserialized.getHeaders());
-        return queryEngine.execute(deserialized.getData(), deserialized.getHeaders(), query);
+        return queryEngine.execute(deserialized.getData(), deserialized.getHeaders(), file.getFileType(), query);
     }
 
     public String dumpOutput(List<Map<String, Object>> result, FileMetadata file, Long userId) throws IOException {

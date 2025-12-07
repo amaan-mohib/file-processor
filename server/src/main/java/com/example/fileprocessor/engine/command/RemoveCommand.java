@@ -2,6 +2,7 @@ package com.example.fileprocessor.engine.command;
 
 import com.example.fileprocessor.engine.grammar.RemoveVisitor;
 import com.example.fileprocessor.engine.grammar.gen.FileQueryParser;
+import com.example.fileprocessor.entity.FileMetadata;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -12,8 +13,8 @@ public class RemoveCommand implements QueryCommand {
     private final FileQueryParser.RemoveStatementContext ctx;
 
     @Override
-    public List<Map<String, Object>> execute(List<Map<String, Object>> data, List<String> headers) {
-        new RemoveVisitor(data).visitRemoveStatement(ctx);
+    public List<Map<String, Object>> execute(List<Map<String, Object>> data, List<String> headers, FileMetadata.FileType fileType) {
+        new RemoveVisitor(data, fileType).visitRemoveStatement(ctx);
         return data;
     }
 }
