@@ -592,4 +592,4 @@ Delta Processor provides a powerful, SQL-like syntax for querying and manipulati
 
 Use this guide to construct queries that efficiently process and transform your data according to your specific requirements.
 
-\* **Note: Nested path not yet implemented**
+\* **Note: JSON value expression not yet implemented**
