@@ -22,6 +22,7 @@ import {
 import { ModeToggle } from "@/components/theme-toggle";
 import useStore from "@/lib/store/useStore";
 import { Fragment } from "react/jsx-runtime";
+import Notifications from "@/components/notifications";
 
 export default function Layout() {
   const breadcrumbs = useStore((state) => state.breadcrumbs);
@@ -63,7 +64,8 @@ export default function Layout() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <div className="px-4">
+          <div className="flex gap-2 px-4">
+            <Notifications />
             <ModeToggle />
           </div>
         </header>

@@ -130,17 +130,22 @@ export const DropzoneContent = ({
     return children;
   }
 
+  const fileLabel =
+    src.length > maxLabelItems
+      ? `${new Intl.ListFormat("en").format(
+          src.slice(0, maxLabelItems).map((file) => file.name)
+        )} and ${src.length - maxLabelItems} more`
+      : new Intl.ListFormat("en").format(src.map((file) => file.name));
+
   return (
     <div className={cn("flex flex-col items-center justify-center", className)}>
       <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
         <UploadIcon size={16} />
       </div>
-      <p className="my-2 w-full truncate font-medium text-sm">
-        {src.length > maxLabelItems
-          ? `${new Intl.ListFormat("en").format(
-              src.slice(0, maxLabelItems).map((file) => file.name)
-            )} and ${src.length - maxLabelItems} more`
-          : new Intl.ListFormat("en").format(src.map((file) => file.name))}
+      <p
+        className="my-2 w-full truncate font-medium text-sm max-w-[400px] text-center"
+        title={fileLabel}>
+        {fileLabel}
       </p>
       <p className="w-full text-wrap text-muted-foreground text-xs">
         Drag and drop or click to replace

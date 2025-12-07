@@ -91,7 +91,9 @@ function RouteComponent() {
       header: "File",
       cell({ row }) {
         return (
-          <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+          <code
+            className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold block w-fit max-w-[200px] truncate"
+            title={row.original.file?.fileName}>
             {row.original.file?.fileName}
           </code>
         );

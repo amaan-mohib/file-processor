@@ -119,17 +119,31 @@ const JobCard: React.FC<JobCardProps> = ({
             <p className="text-muted-foreground text-sm">File:</p>
             <Link to={`/files/$fileId`} params={{ fileId: file.fileKey || "" }}>
               <Button
-                className="cursor-pointer h-fit ml-[-8px]"
+                className="cursor-pointer h-fit ml-[-8px] "
                 size={"sm"}
-                variant={"link"}>
-                {file.fileName}
+                variant={"link"}
+                title={file.fileName}>
+                <span className="max-w-[300px] truncate block">
+                  {file.fileName}
+                </span>
               </Button>
             </Link>
           </div>
         )}
         <p className="text-muted-foreground text-sm">
           {job.status === "COMPLETED" && job.completedAt && (
-            <>Completed at: {formatFullDate(job.completedAt)}</>
+            <div>
+              <span>Completed at: {formatFullDate(job.completedAt)}</span>
+              <br />
+              {job.startedAt && (
+                <span>
+                  Time taken:{" "}
+                  {new Date(job.completedAt).getTime() -
+                    new Date(job.startedAt).getTime()}
+                  ms
+                </span>
+              )}
+            </div>
           )}
           {job.status === "IN_PROGRESS" && job.startedAt && (
             <>Started at: {formatFullDate(job.startedAt)}</>

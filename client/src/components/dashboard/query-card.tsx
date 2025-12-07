@@ -1,10 +1,19 @@
 import React, { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import useStore from "@/lib/store/useStore";
 import { uploadAndRun } from "@/lib/api/dashboard";
 import { toast } from "sonner";
+import { HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface QueryCardProps {}
 
@@ -46,6 +55,26 @@ const QueryCard: React.FC<QueryCardProps> = () => {
     <Card className="flex-1">
       <CardHeader>
         <CardTitle>Query</CardTitle>
+        <CardDescription>
+          Queries that need to be performed on the uploaded assets
+        </CardDescription>
+        <CardAction>
+          <Tooltip>
+            <TooltipTrigger>
+              <a
+                href="https://github.com/amaan-mohib/file-processor/blob/main/FILEQUERY_SYNTAX.md"
+                target="_blank">
+                <Button
+                  variant={"secondary"}
+                  size={"icon"}
+                  className="cursor-pointer">
+                  <HelpCircle />
+                </Button>
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="left">Help</TooltipContent>
+          </Tooltip>
+        </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 flex-1">
         <Textarea
