@@ -591,5 +591,3 @@ Delta Processor provides a powerful, SQL-like syntax for querying and manipulati
 - Field-level updates and removals
 
 Use this guide to construct queries that efficiently process and transform your data according to your specific requirements.
-
-\* **Note: JSON value expression not yet implemented**
