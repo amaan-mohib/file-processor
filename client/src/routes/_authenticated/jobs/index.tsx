@@ -20,6 +20,15 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/jobs/")({
   component: RouteComponent,
+  head() {
+    return {
+      meta: [
+        {
+          title: "Jobs - Delta Processor",
+        },
+      ],
+    };
+  },
 });
 
 function RouteComponent() {

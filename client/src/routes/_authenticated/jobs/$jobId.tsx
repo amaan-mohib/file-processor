@@ -19,6 +19,15 @@ import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/jobs/$jobId")({
   component: RouteComponent,
+  head: (ctx) => {
+    return {
+      meta: [
+        {
+          title: `Job ${ctx.params.jobId} - Delta Processor`,
+        },
+      ],
+    };
+  },
 });
 
 function RouteComponent() {

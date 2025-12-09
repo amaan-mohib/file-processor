@@ -47,7 +47,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("e: ", exception);
 
         if (exception instanceof BadCredentialsException) {
-            return new ResponseEntity<>(new ErrorResponse("The username or password is incorrect"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new ErrorResponse("The username or password is incorrect"), HttpStatus.BAD_REQUEST);
         }
 
         if (exception instanceof AccountStatusException) {

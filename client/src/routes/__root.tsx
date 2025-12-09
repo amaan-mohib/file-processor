@@ -1,4 +1,8 @@
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Outlet,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 import type { IUser } from "@/lib/types";
@@ -19,6 +23,7 @@ interface IRouterContext {
 export const Route = createRootRouteWithContext<IRouterContext>()({
   component: () => (
     <>
+      <HeadContent />
       <Outlet />
       <Toaster />
       <TanstackDevtools
@@ -34,4 +39,13 @@ export const Route = createRootRouteWithContext<IRouterContext>()({
       />
     </>
   ),
+  head: () => {
+    return {
+      meta: [
+        {
+          title: "Delta Processor",
+        },
+      ],
+    };
+  },
 });

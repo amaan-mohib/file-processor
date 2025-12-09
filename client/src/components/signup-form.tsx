@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { Route } from "@/routes/login";
+import { Route } from "@/routes/signup";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,15 +25,22 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 const formSchema = z.object({
+  name: z
+    .string()
+    .min(2, { error: "Name should be at least 2 characters long" })
+    .max(100, { error: "Name should be at most 100 characters long" }),
   email: z.email(),
-  password: z.string(),
+  password: z
+    .string()
+    .min(6, { error: "Password should be at least 6 characters long" })
+    .max(100, { error: "Password should be at most 100 characters long" }),
 });
 
-export function LoginForm({
+export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { login } = useAuth();
+  const { register } = useAuth();
   const router = useRouter();
   const isLoading = useRouterState({ select: (s) => s.isLoading });
   const navigate = Route.useNavigate();
@@ -46,6 +53,7 @@ export function LoginForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
@@ -55,11 +63,13 @@ export function LoginForm({
     setIsSubmitting(true);
     try {
       setError(null);
-      await login(values.email, values.password);
+      await register(values.name, values.email, values.password);
       await router.invalidate();
-      await navigate({ to: search.redirect || "/dashboard" });
+      await navigate({ to: "/login", search: { redirect: search.redirect } });
     } catch (error: any) {
-      setError(error.response?.data?.message || "Something went wrong");
+      const message = error.response?.data?.message || "Something went wrong";
+      const errors = error.response?.data?.errors || [];
+      setError(`${message}: ${errors.join()}`);
       console.error(error);
     } finally {
       setIsSubmitting(false);
@@ -70,15 +80,28 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
+          <CardTitle>Register your account</CardTitle>
+          <CardDescription>Enter the details below to register</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="flex flex-col gap-6">
+                <div className="grid gap-3">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Doe" required {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <div className="grid gap-3">
                   <FormField
                     control={form.control}
@@ -107,11 +130,6 @@ export function LoginForm({
                       <FormItem>
                         <div className="flex items-center">
                           <FormLabel htmlFor="password">Password</FormLabel>
-                          {/* <a
-                            href="#"
-                            className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
-                            Forgot your password?
-                          </a> */}
                         </div>
                         <FormControl>
                           <Input type="password" {...field} />
@@ -127,17 +145,14 @@ export function LoginForm({
                     type="submit"
                     className="w-full"
                     disabled={isLoggingIn}>
-                    Login
+                    Signup
                   </Button>
-                  {/* <Button variant="outline" className="w-full">
-                    Login with Google
-                  </Button> */}
                 </div>
               </div>
               <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link to="/signup" className="underline underline-offset-4">
-                  Sign up
+                Already have an account?{" "}
+                <Link to="/login" className="underline underline-offset-4">
+                  Login
                 </Link>
               </div>
             </form>

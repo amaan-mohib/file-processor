@@ -38,7 +38,11 @@ export const authService = {
     window.location.href = "/login";
   },
   register: async (name: string, email: string, password: string) => {
-    const response = await api.post("/auth/signup", { name, email, password });
+    const response = await api.post<ILoginResponse>("/auth/signup", {
+      name,
+      email,
+      password,
+    });
     return response.data;
   },
   refresh: async () => {

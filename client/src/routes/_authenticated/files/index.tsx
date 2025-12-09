@@ -17,6 +17,15 @@ import { useCallback, useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/files/")({
   component: RouteComponent,
+  head: () => {
+    return {
+      meta: [
+        {
+          title: "Files - Delta Processor",
+        },
+      ],
+    };
+  },
 });
 
 function RouteComponent() {

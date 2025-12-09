@@ -1,9 +1,9 @@
-import { LoginForm } from "@/components/login-form";
+import { SignupForm } from "@/components/signup-form";
 import { ModeToggle } from "@/components/theme-toggle";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/signup")({
   validateSearch: z.object({
     redirect: z.string().optional().catch(""),
   }),
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/login")({
     return {
       meta: [
         {
-          title: "Login - Delta Processor",
+          title: "Signup - Delta Processor",
         },
       ],
     };
@@ -37,7 +37,7 @@ function RouteComponent() {
         Delta Processor
       </div>
       <div className="w-full max-w-sm">
-        <LoginForm />
+        <SignupForm />
       </div>
       <div className="fixed right-4 top-4">
         <ModeToggle />

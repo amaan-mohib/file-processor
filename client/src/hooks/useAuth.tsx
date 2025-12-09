@@ -29,8 +29,13 @@ export const useAuth = () => {
   };
 
   const login = async (email: string, password: string) => {
-    await authService.login(email, password).catch(console.error);
+    await authService.login(email, password);
     await getUser();
+  };
+
+  const register = async (name: string, email: string, password: string) => {
+    await authService.register(name, email, password);
+    // await getUser();
   };
 
   const logout = async () => {
@@ -38,5 +43,5 @@ export const useAuth = () => {
     resetAuth();
   };
 
-  return { user, isAuthenticated, isLoading, login, logout, init };
+  return { user, isAuthenticated, isLoading, login, register, logout, init };
 };

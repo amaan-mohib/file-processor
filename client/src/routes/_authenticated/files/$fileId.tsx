@@ -16,6 +16,15 @@ import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/files/$fileId")({
   component: RouteComponent,
+  head: (ctx) => {
+    return {
+      meta: [
+        {
+          title: `File ${ctx.params.fileId} - Delta Processor`,
+        },
+      ],
+    };
+  },
 });
 
 function RouteComponent() {

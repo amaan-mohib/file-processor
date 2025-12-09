@@ -14,8 +14,17 @@ export const Route = createFileRoute("/")({
     }
   },
   component: RouteComponent,
+  head: () => {
+    return {
+      meta: [
+        {
+          title: "Delta Processor",
+        },
+      ],
+    };
+  },
 });
 
 function RouteComponent() {
-  return <div>Hello "/"!</div>;
+  return <div>Loading...</div>;
 }
