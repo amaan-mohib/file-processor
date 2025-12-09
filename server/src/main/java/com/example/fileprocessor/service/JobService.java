@@ -30,6 +30,7 @@ public class JobService {
     private final FileSystemStorageService storageService;
     private final FileProcessingService fileProcessingService;
     private final ApplicationEventPublisher eventPublisher;
+    private final NotificationService notificationService;
 
     public Job save(Job job) {
         return jobRepository.save(job);
@@ -123,6 +124,8 @@ public class JobService {
             jobFailureService.markJobFailed(jobKey, e);
             throw new RuntimeException(e);
         }
+
+        notificationService.create(user, job, "File: " + file.getFileName() + " has been processed.");
 
         return jobRepository.save(job);
     }

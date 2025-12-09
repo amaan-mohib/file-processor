@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { IJob } from "../types";
+import type { IJob, INotification } from "../types";
 import { recentJobs } from "../api/dashboard";
 import { immer } from "zustand/middleware/immer";
 
@@ -21,6 +21,7 @@ interface IStore {
     isLoading: boolean;
     getRecentJobs: () => Promise<void>;
   };
+  notifications: INotification[];
 }
 
 const useStore = create<IStore>()(
@@ -87,6 +88,7 @@ const useStore = create<IStore>()(
         }
       },
     },
+    notifications: [],
   }))
 );
 

@@ -4,7 +4,6 @@ import {
   Outlet,
   Link,
 } from "@tanstack/react-router";
-
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,

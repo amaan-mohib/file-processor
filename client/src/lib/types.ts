@@ -49,3 +49,11 @@ export interface IPage {
   sortDirection?: string;
   sortBy?: string;
 }
+
+export interface INotification {
+  id: number;
+  message: string;
+  jobKey: string;
+  read: boolean;
+  createdAt: string;
+}
