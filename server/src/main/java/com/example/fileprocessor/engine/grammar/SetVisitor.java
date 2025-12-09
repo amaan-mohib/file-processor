@@ -22,8 +22,8 @@ public class SetVisitor extends FileQueryBaseVisitor<Void> {
                 Object value = evalVisitor.visit(assignment.expression());
                 var target = assignment.target();
                 if (target instanceof FileQueryParser.TargetPathContext) {
-                    if(!fileType.equals(FileMetadata.FileType.JSON)) {
-                        throw new UnsupportedOperationException("Path traversal is only supported for JSON files.");
+                    if(fileType.equals(FileMetadata.FileType.CSV)) {
+                        throw new UnsupportedOperationException("Path traversal is not supported for CSV files.");
                     }
                     setPath(
                             row,

@@ -154,8 +154,8 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
             boolean leftVal = (Boolean) left;
             boolean rightVal = (Boolean) right;
             return switch (operator) {
-                case "AND" -> leftVal && rightVal;
-                case "OR" -> leftVal || rightVal;
+                case "AND", "and" -> leftVal && rightVal;
+                case "OR", "or" -> leftVal || rightVal;
                 default -> throw new IllegalArgumentException("Unknown logical operator: " + operator);
             };
         } else {
@@ -223,8 +223,8 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
     }
 
     protected Object visitPath(FileQueryParser.PathExpressionContext ctx) {
-        if(!fileType.equals(FileMetadata.FileType.JSON)) {
-            throw new UnsupportedOperationException("Path traversal is only supported for JSON files.");
+        if(fileType.equals(FileMetadata.FileType.CSV)) {
+            throw new UnsupportedOperationException("Path traversal is not supported for CSV files.");
         }
         return new PathResolverVisitor(row).visitPathExpression(ctx, false).current;
     }

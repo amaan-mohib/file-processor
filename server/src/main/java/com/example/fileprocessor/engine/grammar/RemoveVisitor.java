@@ -19,8 +19,8 @@ public class RemoveVisitor extends FileQueryBaseVisitor<Void> {
         for (Map<String, Object> row : data) {
             for (var target : ctx.target()) {
                 if (target instanceof FileQueryParser.TargetPathContext) {
-                    if(!fileType.equals(FileMetadata.FileType.JSON)) {
-                        throw new UnsupportedOperationException("Path traversal is only supported for JSON files.");
+                    if(fileType.equals(FileMetadata.FileType.CSV)) {
+                        throw new UnsupportedOperationException("Path traversal is not supported for CSV files.");
                     }
                     removePath(
                             row,
