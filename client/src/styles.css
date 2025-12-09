@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
 @import 'tailwindcss';
 
 @import 'tw-animate-css';
@@ -7,7 +9,7 @@
 body {
   @apply m-0;
   font-family:
-    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -15,7 +17,7 @@ body {
 
 code {
   font-family:
-    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    monospace, ui-monospace, source-code-pro, Menlo, Monaco, Consolas, 'Courier New';
 }
 
 :root {
@@ -51,6 +53,7 @@ code {
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.213 47.604);
+  --font-mono: monospace, ui-monospace, source-code-pro, Menlo, Monaco, Consolas, 'Courier New';
 }
 
 .dark {

@@ -80,7 +80,12 @@ function RouteComponent() {
           </CardAction>
         </CardHeader>
         <CardContent>
-          <Textarea rows={20} readOnly value={job.query} />
+          <Textarea
+            className="font-mono"
+            rows={20}
+            readOnly
+            value={job.query}
+          />
         </CardContent>
       </Card>
       {job.failedReason && (
@@ -89,7 +94,12 @@ function RouteComponent() {
             <CardTitle>Failed Reason</CardTitle>
           </CardHeader>
           <CardContent>
-            <Textarea rows={20} readOnly value={job.failedReason} />
+            <Textarea
+              className="font-mono"
+              rows={20}
+              readOnly
+              value={job.failedReason}
+            />
           </CardContent>
         </Card>
       )}

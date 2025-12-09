@@ -112,7 +112,8 @@ const QueryCard: React.FC<QueryCardProps> = () => {
             setQuery(e.target.value);
           }}
           placeholder="Type your manipulation query here..."
-          className="flex-1"
+          autoComplete="off"
+          className="flex-1 font-mono"
         />
         <Button
           className="w-fit ml-auto"
