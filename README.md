@@ -2,6 +2,12 @@
 
 A full-stack application that allows users to upload, process, and query files in various formats (CSV, JSON, XML). The application consists of a React frontend and a Spring Boot backend.
 
+## Screenshots
+
+![homepage](images/homepage.jpg)
+
+![job page](images/job_page.jpg)
+
 ## Project Structure
 
 ```
