@@ -3,6 +3,8 @@ package com.example.fileprocessor.engine.grammar;
 import com.example.fileprocessor.engine.grammar.gen.FileQueryBaseVisitor;
 import com.example.fileprocessor.engine.grammar.gen.FileQueryParser;
 import com.example.fileprocessor.entity.FileMetadata;
+import com.example.fileprocessor.util.GenericUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
@@ -64,6 +66,17 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
             }
         } else if (literal.getText().equals("true") || literal.getText().equals("false")) {
             return Boolean.parseBoolean(literal.getText());
+        } else if (literal.jsonValue() != null) {
+            Object json = visit(literal.jsonValue());
+            if (fileType != FileMetadata.FileType.CSV) {
+                return json;
+            } else {
+                try {
+                    return GenericUtil.getObjectAsString(json);
+                } catch (JsonProcessingException e) {
+                    throw new UnsupportedOperationException("Failed to convert JSON value to string.", e);
+                }
+            }
         }
         return null;
     }
@@ -229,5 +242,42 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
     @Override
     public Object visitParenExpr(FileQueryParser.ParenExprContext ctx) {
         return visit(ctx.expression());
+    }
+
+    @Override
+    public Object visitValueOrId(FileQueryParser.ValueOrIdContext ctx) {
+        if (ctx.value() != null) {
+            return getValue(ctx.value());
+        } else if (ctx.identifier() != null) {
+            return getIdentifier(ctx.identifier());
+        }
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> visitPair(FileQueryParser.PairContext ctx) {
+        String key = ctx.STRING().getText().replace("\"", "");
+        Object value = visit(ctx.valueOrId());
+        Map<String, Object> map = new HashMap<>();
+        map.put(key, value);
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> visitJsonPairExpr(FileQueryParser.JsonPairExprContext ctx) {
+        Map<String, Object> map = new HashMap<>();
+        for (var pairContext : ctx.pair()) {
+            map.putAll(visitPair(pairContext));
+        }
+        return map;
+    }
+
+    @Override
+    public List<Object> visitJsonValueExpr(FileQueryParser.JsonValueExprContext ctx) {
+        List<Object> list = new ArrayList<>();
+        for (var valueContext : ctx.valueOrId()) {
+            list.add(visitValueOrId(valueContext));
+        }
+        return list;
     }
 }

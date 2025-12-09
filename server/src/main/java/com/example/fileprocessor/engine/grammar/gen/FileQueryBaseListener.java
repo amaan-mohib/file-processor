@@ -401,6 +401,18 @@ public class FileQueryBaseListener implements FileQueryListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterValueOrId(FileQueryParser.ValueOrIdContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitValueOrId(FileQueryParser.ValueOrIdContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterJsonPairExpr(FileQueryParser.JsonPairExprContext ctx) { }
 	/**
 	 * {@inheritDoc}

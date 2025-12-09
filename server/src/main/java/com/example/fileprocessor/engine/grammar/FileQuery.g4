@@ -113,13 +113,18 @@ identifier
     : ID
     ;
 
+valueOrId
+    : value
+    | identifier
+    ;
+
 jsonValue
     : '{' pair (',' pair)* '}'      # JsonPairExpr
-    | '[' value (',' value)* ']'    # JsonValueExpr
+    | '[' valueOrId (',' valueOrId)* ']'    # JsonValueExpr
     ;
 
 pair
-    : STRING ':' value
+    : STRING ':' valueOrId
     ;
 
 comparator

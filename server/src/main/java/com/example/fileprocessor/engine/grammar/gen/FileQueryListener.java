@@ -354,6 +354,16 @@ public interface FileQueryListener extends ParseTreeListener {
 	 */
 	void exitIdentifier(FileQueryParser.IdentifierContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link FileQueryParser#valueOrId}.
+	 * @param ctx the parse tree
+	 */
+	void enterValueOrId(FileQueryParser.ValueOrIdContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FileQueryParser#valueOrId}.
+	 * @param ctx the parse tree
+	 */
+	void exitValueOrId(FileQueryParser.ValueOrIdContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code JsonPairExpr}
 	 * labeled alternative in {@link FileQueryParser#jsonValue}.
 	 * @param ctx the parse tree

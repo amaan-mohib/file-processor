@@ -216,6 +216,12 @@ public interface FileQueryVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIdentifier(FileQueryParser.IdentifierContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link FileQueryParser#valueOrId}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitValueOrId(FileQueryParser.ValueOrIdContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code JsonPairExpr}
 	 * labeled alternative in {@link FileQueryParser#jsonValue}.
 	 * @param ctx the parse tree

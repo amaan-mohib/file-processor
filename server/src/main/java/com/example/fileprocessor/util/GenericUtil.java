@@ -1,6 +1,9 @@
 package com.example.fileprocessor.util;
 
 import com.example.fileprocessor.entity.FileMetadata;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class GenericUtil {
     private GenericUtil() {
@@ -44,5 +47,11 @@ public class GenericUtil {
         }
 
         return value;
+    }
+
+    public static String getObjectAsString(Object obj) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        return mapper.writeValueAsString(obj);
     }
 }
