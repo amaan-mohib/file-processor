@@ -23,9 +23,17 @@ import { ModeToggle } from "@/components/theme-toggle";
 import useStore from "@/lib/store/useStore";
 import { Fragment } from "react/jsx-runtime";
 import Notifications from "@/components/notifications";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Layout() {
   const breadcrumbs = useStore((state) => state.breadcrumbs);
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <SidebarProvider>
@@ -65,6 +73,10 @@ export default function Layout() {
             </Breadcrumb>
           </div>
           <div className="flex gap-2 px-4">
+            <Button variant={"outline"} onClick={handleLogout}>
+              <LogOut />
+              Logout
+            </Button>
             <Notifications />
             <ModeToggle />
           </div>

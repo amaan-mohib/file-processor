@@ -75,7 +75,7 @@ const QueryCard: React.FC<QueryCardProps> = () => {
         </CardDescription>
         <CardAction>
           <div className="flex gap-2">
-            <Button variant={"outline"} onClick={handleImportClick}>
+            <Button variant={"secondary"} onClick={handleImportClick}>
               <Download />
               Import
             </Button>
