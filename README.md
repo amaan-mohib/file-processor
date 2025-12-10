@@ -4,9 +4,9 @@ A full-stack application that allows users to upload, process, and query files i
 
 ## Screenshots
 
-![homepage](images/homepage.jpg)
+![homepage](/images/homepage.jpg)
 
-![job page](images/job_page.jpg)
+![job page](/images/job_page.jpg)
 
 ## Project Structure
 
