@@ -62,7 +62,7 @@ public class EvalVisitor extends FileQueryBaseVisitor<Object> {
             if (numStr.contains(".")) {
                 return Double.parseDouble(numStr);
             } else {
-                return Integer.parseInt(numStr);
+                return Long.parseLong(numStr);
             }
         } else if (literal.getText().equals("true") || literal.getText().equals("false")) {
             return Boolean.parseBoolean(literal.getText());

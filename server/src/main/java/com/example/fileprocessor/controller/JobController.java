@@ -12,6 +12,7 @@ import com.example.fileprocessor.service.FileJobService;
 import com.example.fileprocessor.service.JobService;
 import com.example.fileprocessor.service.RefreshTokenService;
 import com.example.fileprocessor.storage.FileSystemStorageService;
+import com.example.fileprocessor.storage.StorageFileNotFoundException;
 import com.example.fileprocessor.util.GenericUtil;
 import com.example.fileprocessor.util.SecurityUtil;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -170,5 +171,11 @@ public class JobController {
     public ResponseEntity<?> handleRuntimeException(RuntimeException exc) {
         log.error("e: ", exc);
         return new ResponseEntity<>(new GenericResponse<>(GenericUtil.getRootCause(exc).getMessage(), 400), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(StorageFileNotFoundException.class)
+    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+        log.error("e: ", exc);
+        return new ResponseEntity<>(new GenericResponse<>("File not found", 404), HttpStatus.NOT_FOUND);
     }
 }

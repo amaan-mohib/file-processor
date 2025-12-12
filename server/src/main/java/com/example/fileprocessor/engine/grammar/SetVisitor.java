@@ -1,5 +1,6 @@
 package com.example.fileprocessor.engine.grammar;
 
+import com.example.fileprocessor.engine.RowProcessor;
 import com.example.fileprocessor.engine.grammar.gen.FileQueryBaseVisitor;
 import com.example.fileprocessor.engine.grammar.gen.FileQueryParser;
 import com.example.fileprocessor.entity.FileMetadata;
@@ -16,27 +17,32 @@ public class SetVisitor extends FileQueryBaseVisitor<Void> {
 
     @Override
     public Void visitSetStatement(FileQueryParser.SetStatementContext ctx) {
-        for (Map<String, Object> row : data) {
-            EvalVisitor evalVisitor = new EvalVisitor(row, fileType);
-            for (var assignment : ctx.assignment()) {
-                Object value = evalVisitor.visit(assignment.expression());
-                var target = assignment.target();
-                if (target instanceof FileQueryParser.TargetPathContext) {
-                    if(fileType.equals(FileMetadata.FileType.CSV)) {
-                        throw new UnsupportedOperationException("Path traversal is not supported for CSV files.");
-                    }
-                    setPath(
-                            row,
-                            ((FileQueryParser.TargetPathContext) target).pathExpression(),
-                            value
-                    );
-                } else {
-                    String key = target.getText();
-                    row.put(key, value);
+        RowProcessor.process(data.size(), index -> {
+            Map<String, Object> row = data.get(index);
+            processRow(row, ctx);
+        });
+        return null;
+    }
+
+    private void processRow(Map<String, Object> row, FileQueryParser.SetStatementContext ctx) {
+        EvalVisitor evalVisitor = new EvalVisitor(row, fileType);
+        for (var assignment : ctx.assignment()) {
+            Object value = evalVisitor.visit(assignment.expression());
+            var target = assignment.target();
+            if (target instanceof FileQueryParser.TargetPathContext) {
+                if(fileType.equals(FileMetadata.FileType.CSV)) {
+                    throw new UnsupportedOperationException("Path traversal is not supported for CSV files.");
                 }
+                setPath(
+                        row,
+                        ((FileQueryParser.TargetPathContext) target).pathExpression(),
+                        value
+                );
+            } else {
+                String key = target.getText();
+                row.put(key, value);
             }
         }
-        return null;
     }
 
     private void setPath(Map<String, Object> row, FileQueryParser.PathExpressionContext pathContext, Object value) {
