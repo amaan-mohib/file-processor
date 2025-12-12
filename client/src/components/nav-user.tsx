@@ -15,7 +15,7 @@ export function NavUser() {
       user?.name
         .split(" ")
         .map((el) => el[0])
-        .join(),
+        .join(""),
     [user]
   );
 

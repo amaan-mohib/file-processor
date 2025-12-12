@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: ../../server
+      dockerfile: Dockerfile
+    container_name: backend_dev
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8080
+      RMQ_HOST: host.docker.internal
+      DB_URL: jdbc:postgresql://host.docker.internal:5432/fileprocessor?useSSL=false
+      SHOW_SQL: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - file_processor_storage_dev:/app/storage
+
+  frontend:
+    build:
+      context: ../../client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: "/api"
+    container_name: file_processor_dev
+    depends_on:
+      - backend_dev
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  file_processor_storage_dev:

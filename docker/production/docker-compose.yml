@@ -1,0 +1,72 @@
+services:
+  backend:
+    build:
+      context: ../../server
+      dockerfile: Dockerfile
+    container_name: fp_backend
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 8080
+      DB_URL: jdbc:postgresql://db:5432/fileprocessor?useSSL=false
+      DB_USER: postgres
+      DB_PASSWORD: admin123
+      RMQ_HOST: rabbitmq
+      RMQ_PORT: 5672
+      RMQ_USER: guest
+      RMQ_PASSWORD: guest
+      MAX_UPLOAD_SIZE: 10MB
+      MAX_UPLOAD_REQUEST_SIZE: 50MB
+      SHOW_SQL: false
+      IS_MULTITHREADED: false
+    depends_on:
+      - db
+      - rabbitmq
+    volumes:
+      - file_processor_storage:/app/storage
+
+  frontend:
+    build:
+      context: ../../client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: "/api"
+    container_name: file_processor
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    container_name: fp_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: fileprocessor
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fileprocessor"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    restart: unless-stopped
+    container_name: fp_rabbitmq
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+
+volumes:
+  file_processor_storage:
+  dbdata:
+  rabbitmq_data:
