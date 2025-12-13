@@ -35,7 +35,8 @@ steps:
         path: /var/run/docker.sock
     commands:
       - docker images 'file_processor*'
-      - docker images 'file_processor*' --filter "dangling=true" -q | xargs -r docker rmi -f | echo "No dangling images to remove"
+      # Remove images older than 7 days (168 hours)
+      - docker images 'file_processor*' --filter "until=168h" -q | xargs -r docker rmi -f | echo "No dangling images to remove"
 
 volumes:
   - name: dockersock
