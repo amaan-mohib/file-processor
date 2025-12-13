@@ -9,7 +9,16 @@ environment:
   BUILD_NUMBER: ${DRONE_BUILD_NUMBER}
 
 steps:
-  - name: setup
+  - name: build
+    image: docker:27-cli
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    commands:
+      - cd ./docker/production
+      - docker-compose build
+
+  - name: deploy
     image: docker:27-cli
     volumes:
       - name: dockersock
@@ -17,7 +26,6 @@ steps:
     commands:
       - cd ./docker/production
       - docker-compose down
-      - docker-compose build --no-cache
       - docker-compose up -d
 
 volumes:

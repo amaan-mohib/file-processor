@@ -1,5 +1,6 @@
 services:
   backend:
+    image: fp_backend:${BUILD_NUMBER}
     build:
       context: ../../server
       dockerfile: Dockerfile
@@ -26,6 +27,7 @@ services:
       - file_processor_storage:/app/storage
 
   frontend:
+    image: file_processor:${BUILD_NUMBER}
     build:
       context: ../../client
       dockerfile: Dockerfile
