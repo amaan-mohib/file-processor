@@ -18,6 +18,7 @@ services:
       MAX_UPLOAD_REQUEST_SIZE: 50MB
       SHOW_SQL: false
       IS_MULTITHREADED: false
+      ALLOWED_ORIGINS: http://localhost:3010,http://100.71.119.119:3010,http://thinkpad-t490:3010,https://file-processor.amaan-mohib.net
     depends_on:
       - db
       - rabbitmq
