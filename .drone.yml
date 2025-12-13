@@ -28,6 +28,15 @@ steps:
       - docker-compose down
       - docker-compose up -d
 
+  - name: cleanup
+    image: docker:27-cli
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    commands:
+      - docker images 'file_processor*'
+      - docker images 'file_processor*' --filter "dangling=true" -q | xargs -r docker rmi -f | echo "No dangling images to remove"
+
 volumes:
   - name: dockersock
     host:

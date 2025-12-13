@@ -1,6 +1,6 @@
 services:
   backend:
-    image: fp_backend:${BUILD_NUMBER}
+    image: file_processor_server:${BUILD_NUMBER}
     build:
       context: ../../server
       dockerfile: Dockerfile

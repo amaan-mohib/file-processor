@@ -6,7 +6,7 @@ RUN npm ci
 
 ARG VITE_API_BASE_URL
 RUN echo "VITE_API_BASE_URL=$VITE_API_BASE_URL" > .env.production
-RUN echo "NODE_ENV=production" >> .env.production
+RUN echo "SHOW_DEVTOOLS=false" >> .env.production
 COPY . .
 
 RUN npm run build
